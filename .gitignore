@@ -8,3 +8,6 @@ media
 
 # env #  
 .venv 
+
+# internal reports #
+reports/
