@@ -3,8 +3,17 @@
 {% block content %}
  <form action="/register/" method="post">
     {% csrf_token %}
-    {{ form }}
-    <input type="submit" value="Submit">
+    <div class="d-flex align-items-center justify-content-center bg-primary vh-100">
+    <div class="d-flex flex-column align-items-stretch bg-white p-3 "> 
+        {% for field in form %} 
+        <div class="mb-3">
+            <label for="{{field.id_for_label}}">{{field.label}}</label> 
+            {{ field }} 
+        </div>
+        {% endfor %}
+        <input class="btn btn-primary" type="submit" name="submit" value="Register"/> 
+    </div>
+    </div>
 </form>
 
 {% endblock %}
