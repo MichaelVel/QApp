@@ -35,10 +35,18 @@
             <i class="bi bi-person-circle"></i>
             {{ request.user.username }}
         </button>
-        <form action="accounts/logout/" method="post" class="dropdown-menu">
-            {% csrf_token %}
-            <button type="submit" class="btn dropdown-item">Log Out</button>
-        </form>
+        <div class="dropdown-menu">
+            <form action="accounts/logout/" method="post" class="dropdown-item">
+                {% csrf_token %}
+                <button type="submit" class="btn dropdown-item">Salir</button>
+            </form>
+            {% if user.is_staff %}
+            <button class="btn dropdown-item" onclick="location.href+='admin/'">
+                Administración
+            </button>            
+            {% endif %}
+        </div>
+
         {% endif %}
     </div>
 </header>
