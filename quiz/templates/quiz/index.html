@@ -56,7 +56,10 @@
             <h1>QApp</h1>
             <p> ¡Prueba tu Conocimiento!</p>
             <div class="d-flex flex-column">
+            <form action="quiz/start" method="post" class="d-flex flex-column flex-align-items-stretch">
+                {% csrf_token %}
                 <button class="btn btn-primary btn-lg m-1">INICIAR</button>
+            </form>
                 <button class="btn btn-info btn-lg m-1" data-bs-toggle="modal" data-bs-target="#instructions">INSTRUCCIONES</button>
             </div> 
         </div>
