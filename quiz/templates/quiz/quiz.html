@@ -1,4 +1,22 @@
 {% extends 'quiz/header.html' %}
 
 {% block content %}
+<main class="container bg-primary">
+    <div class="row justify-content-center bg-warning">
+        <div class="col d-flex col-md-8 bg-danger justify-content-center align-items-center vh-100">
+        <form class="d-flex flex-column w-75 bg-info" action="{% url 'question' question.id %}" method="post">
+        {% csrf_token %}
+        <fieldset class="d-flex flex-column form-group p-3 align-items-stretch">
+            <legend class=""><h1>{{ question.question_text }}</h1></legend>
+            {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
+            {% for choice in question.choice_set.all %}
+                <input type="radio" class="btn-check p-3" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}">
+                <label class="btn btn-secondary p-3 mb-1" for="choice{{ forloop.counter }}">{{ choice.choice_text }}</label><br>
+            {% endfor %}
+        </fieldset>
+        <input type="submit" value="Vote">
+        </form>
+        </div>
+    </div>
+</main>
 {% endblock %}

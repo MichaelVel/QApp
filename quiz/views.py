@@ -21,10 +21,24 @@ def start(request):
     return redirect(question, question_id=first_question)
 
 def question(request, question_id):
-    return HttpResponse(question_id)
+
+    if request.method == "GET": 
+        question = Question.objects.get(id=question_id)
+        return render(request,'quiz/quiz.html', {'question': question})
+
+    questions: list[int] = request.session['questions']
+
+    if not questions:
+        return redirect(end)
+
+    question_id = questions.pop()
+    request.session['questions'] = questions
+    question = Question.objects.get(id=question_id)
+
+    return render(request, 'quiz/quiz.html', {'question': question})
 
 def end(request):
-    pass
+    return HttpResponse("Finished")
 
 def results(request):
     pass
