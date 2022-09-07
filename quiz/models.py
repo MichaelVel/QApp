@@ -9,14 +9,28 @@ class Question(models.Model):
     def __str__(self):
        return self.question_text 
 
-    
 
 class Choice(models.Model):
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     choice_text = models.CharField(max_length=200)
     is_correct = models.BooleanField("choice is correct?")
 
+
+class AnswerSessionManager(models.Manager):
+    def get_last_session(self, user_id):
+        return self.filter(user=user_id).aggregate(models.Max('session'))['session__max']
+
 class Answer(models.Model):
     session = models.BigIntegerField()
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    choice = models.ForeignKey(Choice,
+            on_delete=models.CASCADE,
+            default=None,
+            blank=True,
+            null=True)
+    pub_date = models.DateTimeField('date answered')
+    time = models.IntegerField(default=0)
+
+    sessions = AnswerSessionManager()
+
