@@ -15,10 +15,24 @@ class Choice(models.Model):
     choice_text = models.CharField(max_length=200)
     is_correct = models.BooleanField("choice is correct?")
 
+    def is_correct_answer(self):
+        return self.is_correct
+
 
 class AnswerSessionManager(models.Manager):
     def get_last_session(self, user_id):
         return self.filter(user=user_id).aggregate(models.Max('session'))['session__max']
+
+    def score(self, user_id, session_id):
+        answers = self.filter(user__id=user_id, session=session_id)
+        score = 0
+
+        for answer in answers:
+            if not answer.choice or not answer.choice.is_correct_answer():
+                continue
+            score += answer.time
+
+        return score
 
 class Answer(models.Model):
     session = models.BigIntegerField()

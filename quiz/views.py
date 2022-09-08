@@ -1,12 +1,14 @@
 import random
+from django.core.exceptions import ObjectDoesNotExist
 
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseNotFound
 from django.shortcuts import render, redirect
 from django.urls import reverse
 from django.contrib.auth import views as auth_views
 from django.views import View
+from django.utils import timezone
 
-from .models import Question,Answer
+from .models import Choice, Question,Answer
 
 def index(request): 
     return render(request,'quiz/index.html')
@@ -23,7 +25,7 @@ def start(request):
     if not last_session:
         last_session = 0
 
-
+    request.session['game_ended'] = False 
     request.session['questions'] = questions_selected
     request.session['game_session'] = last_session + 1
     request.session['answers'] = []
@@ -36,8 +38,11 @@ class QuestionView(View):
         return render(request,'quiz/quiz.html', {'question': question})
 
     def post(self,request,question_id):
+        if request.session['game_ended']:
+            return redirect('index')
+
         # Store the answers in cache
-        answers = request.session['answers']
+        answers = request.session.get('answers')
         answers.append((question_id,
             request.POST.get('choice'),
             request.POST['timerVal']))
@@ -48,6 +53,7 @@ class QuestionView(View):
         questions: list[int] = request.session['questions']
 
         if not questions:
+            request.session['game_ended'] = True 
             return redirect(end)
 
         question_id = questions.pop()
@@ -58,7 +64,37 @@ class QuestionView(View):
 
 
 def end(request):
-    return HttpResponse("Finished")
+    """
+    Check the answers after the game. If everything is ok stores the
+    answers into the database.
+    """
+    game_results = request.session.get("answers")
+    game_session = request.session["game_session"]
+   
+    if not game_results:
+        return HttpResponseNotFound("hello")
+
+    for question_id, choice_id, timer_val in game_results:
+        try:
+            choice = Choice.objects.get(pk=choice_id)
+        except ObjectDoesNotExist:
+            choice = None
+
+        answer = Answer(session=game_session,
+                 question = Question.objects.get(pk=question_id),
+                 user= request.user,
+                 choice = choice,
+                 pub_date=timezone.now(),
+                 time=timer_val)
+        answer.save()
+
+    # Make sure is not possible to store the same answers in the database
+    del request.session["answers"]
+
+    return redirect('results')
 
 def results(request):
-    pass
+    """ Display the results of the game"""
+    score = Answer.sessions.score(request.user.id, request.session['game_session'])
+
+    return HttpResponse(score)
