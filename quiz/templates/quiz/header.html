@@ -33,7 +33,7 @@
             {{ request.user.username }}
         </button>
         <div class="dropdown-menu">
-            <form action="accounts/logout/" method="post" class="dropdown-item">
+            <form action="/accounts/logout/" method="post" class="dropdown-item">
                 {% csrf_token %}
                 <button type="submit" class="btn dropdown-item">Salir</button>
             </form>
