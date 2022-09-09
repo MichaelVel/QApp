@@ -3,10 +3,9 @@ from django.core.exceptions import ObjectDoesNotExist
 
 from django.http import HttpResponse, HttpResponseNotFound
 from django.shortcuts import render, redirect
-from django.urls import reverse
-from django.contrib.auth import views as auth_views
 from django.views import View
 from django.utils import timezone
+from django.views.generic.base import TemplateView
 
 from .models import Choice, Question,Answer
 
@@ -93,8 +92,13 @@ def end(request):
 
     return redirect('results')
 
-def results(request):
-    """ Display the results of the game"""
-    score = Answer.sessions.score(request.user.id, request.session['game_session'])
+class ResultsView(TemplateView):
+    template_name = "quiz/results.html"
 
-    return HttpResponse(score)
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['score'] = Answer.sessions.score(
+                self.request.user.id, 
+                self.request.session['game_session'])
+        context['top5'] = Answer.sessions.top5_scores()
+        return context

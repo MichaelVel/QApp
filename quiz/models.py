@@ -1,5 +1,6 @@
 from django.db import models
 from django.contrib.auth.models import User
+from django.db.models import Sum
 
 class Question(models.Model):
     question_text = models.CharField(max_length=200)
@@ -24,15 +25,21 @@ class AnswerSessionManager(models.Manager):
         return self.filter(user=user_id).aggregate(models.Max('session'))['session__max']
 
     def score(self, user_id, session_id):
-        answers = self.filter(user__id=user_id, session=session_id)
-        score = 0
+        score = self.filter(user__id=user_id, session=session_id)
+        score = score.exclude(choice__is_correct=False)
+        score = score.aggregate(score=Sum('time'))
 
-        for answer in answers:
-            if not answer.choice or not answer.choice.is_correct_answer():
-                continue
-            score += answer.time
+        if score['score'] is None:
+            return 0
 
-        return score
+        return score['score']
+
+    def top5_scores(self):
+        scores = self.exclude(choice__is_correct=False)
+        scores = scores.values('user__username','session')
+        scores = scores.annotate(score=Sum('time'))
+        scores = scores.order_by('-score')[:5]
+        return scores
 
 class Answer(models.Model):
     session = models.BigIntegerField()

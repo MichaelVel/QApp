@@ -1,0 +1,45 @@
+{% extends 'quiz/head.html' %}
+
+{% block content %}
+{% include 'quiz/header.html' %}
+
+<main class="container-fluid bg-primary vh-100"> 
+    <div class="row justify-content-md-center bg-danger vh-100">
+        <div class="d-flex flex-column bg-warning justify-content-center align-items-center w-75"> 
+            <h1>QApp</h1>
+            <p> PUNTUACIÓN:</p>
+            <div> {{ score }}</div>
+            <div class="w-50"> 
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th scope="col">#</th>
+                            <th scope="col">JUGADOR</th>
+                            <th scope="col">PUNTAJE</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for score in top5 %} 
+                            <tr>
+                                <th scope="row">{{ forloop.counter }}</th>
+                                <td> {{ score.user__username }}</td>
+                                <td> {{ score.score }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <div class="d-flex flex-row justify-content-end bg-secondary w-50">
+                <form action="{% url 'start' %}" method="post" class="">
+                {% csrf_token %}
+                <button class="btn btn-primary btn-md m-1">REINTENTAR</button>
+            </form>
+            <form action="{% url 'index' %}" method="post" class="">
+                {% csrf_token %}
+                <button  class="btn btn-info btn-md m-1">INICIO</button>
+            </form>
+            </div> 
+        </div>
+    </div>
+</main>
+{% endblock content %}
