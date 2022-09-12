@@ -1,0 +1,15 @@
+:root {
+    --light-shades: #EBEDEB;
+    --light-accent: #8BAA66;
+    --main-color: #689FA2;
+    --dark-accent: #724B6E;
+    --dark-shades: #27272E;
+}
+    
+.body-background {
+    background-color: var(--light-shades);
+}
+
+.header-background {
+    background: rgba(76, 175, 80, 0)
+}

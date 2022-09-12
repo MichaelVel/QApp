@@ -1,21 +1,28 @@
 {% extends 'quiz/head.html' %}
+{% load static %}
 
+{% block view_stylesheet %} {% static 'quiz/css/index.css' %} {% endblock %}
 {% block content %}
+
 {% include 'quiz/header.html' %}
 
-<main class="container-fluid bg-primary vh-100"> 
-    <div class="row justify-content-md-center bg-danger vh-100">
-        <div class="d-flex flex-column bg-warning justify-content-center align-items-center w-75"> 
-            <h1>QApp</h1>
-            <p> ¡Prueba tu Conocimiento!</p>
-            <div class="d-flex flex-column">
-            <form action="quiz/start" method="post" class="d-flex flex-column flex-align-items-stretch">
-                {% csrf_token %}
-                <button class="btn btn-primary btn-lg m-1">INICIAR</button>
-            </form>
-                <button class="btn btn-info btn-lg m-1" data-bs-toggle="modal" data-bs-target="#instructions">INSTRUCCIONES</button>
-            </div> 
+<main class="container vh-100"> 
+    <div class="container bg-container-light main-container p-3">
+        <div class="row justify-content-center">
+            <h1 class="bg-warning col-11">QApp</h1>
         </div>
+        <div class="row justify-content-center">
+            <p class="bg-warning col-10"> ¡Prueba tu Conocimiento!</p>
+        </div>
+        <div class="container bg-warning">
+            <form action="quiz/start" method="post" class="row justify-content-center">
+            {% csrf_token %}
+                <button class="btn btn-primary m-1 col-10 col-sm-4 ">INICIAR</button>
+            </form>
+            <div class="row justify-content-center">
+                <button class="btn btn-info m-1 col-10 col-sm-4" data-bs-toggle="modal" data-bs-target="#instructions">INSTRUCCIONES</button>
+            </div>
+        </div> 
     </div>
 </main>
 <!-- Modal -->
