@@ -6,15 +6,13 @@
 
 {% include 'quiz/header.html' %}
 
-<main class="container vh-100"> 
-    <div class="container bg-container-light main-container p-3">
-        <div class="row justify-content-center">
-            <h1 class="bg-warning col-11">QApp</h1>
+<main class="container vh-100 bg-transparent"> 
+    <div class="row h-100 align-items-center p-2">
+    <div class="container main-container bg-lshades p-2">
+        <div class="row justify-content-center p-3">
+            <object data="{% static 'quiz/img/logo.svg'%}"></object>
         </div>
-        <div class="row justify-content-center">
-            <p class="bg-warning col-10"> ¡Prueba tu Conocimiento!</p>
-        </div>
-        <div class="container bg-warning">
+        <div class="container">
             <form action="quiz/start" method="post" class="row justify-content-center">
             {% csrf_token %}
                 <button class="btn btn-primary m-1 col-10 col-sm-4 ">INICIAR</button>
@@ -23,6 +21,7 @@
                 <button class="btn btn-info m-1 col-10 col-sm-4" data-bs-toggle="modal" data-bs-target="#instructions">INSTRUCCIONES</button>
             </div>
         </div> 
+    </div>
     </div>
 </main>
 <!-- Modal -->

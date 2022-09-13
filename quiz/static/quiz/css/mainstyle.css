@@ -1,15 +1,35 @@
 :root {
     --light-shades: #EBEDEB;
-    --light-accent: #8BAA66;
-    --main-color: #689FA2;
-    --dark-accent: #724B6E;
-    --dark-shades: #27272E;
+    --light-accent: #2ac6d0;
+    --main-color: #53a0e7;
+    --dark-accent: #6e84a4;
+    --dark-shades: #1a3460;
 }
-    
-.body-background {
+
+.bg-transparent {
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.bg-lshades {
     background-color: var(--light-shades);
 }
 
-.header-background {
-    background: rgba(76, 175, 80, 0)
+.bg-laccent {
+    background-color: var(--light-accent);
+}
+
+.bg-main {
+    background-color: var(--main-color);
+}
+
+.bg-daccent {
+    background-color: var(--dark-accent);
+}
+
+.bg-dshades {
+    background-color: var(--dark-shades);
+}  
+
+.bg-image {
+    background-image: url('../img/lagunillas.jpeg');
 }
