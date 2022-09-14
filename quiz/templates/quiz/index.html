@@ -6,16 +6,16 @@
 
 {% include 'quiz/header.html' %}
 
-<main class="container vh-100 bg-transparent"> 
+<main class="container vh-100 bg-transparent "> 
     <div class="row h-100 align-items-center p-2">
-    <div class="container main-container bg-lshades p-2">
+    <div class="container col-sm-11 col-lg-6 main-container py-4">
         <div class="row justify-content-center p-3">
-            <object data="{% static 'quiz/img/logo.svg'%}"></object>
+            <object class="col col-sm-8 col-lg-8" data="{% static 'quiz/img/logo.svg'%}"></object>
         </div>
         <div class="container">
             <form action="quiz/start" method="post" class="row justify-content-center">
             {% csrf_token %}
-                <button class="btn btn-primary m-1 col-10 col-sm-4 ">INICIAR</button>
+                <button class="btn btn-primary  m-1 col-10 col-sm-4 ">INICIAR</button>
             </form>
             <div class="row justify-content-center">
                 <button class="btn btn-info m-1 col-10 col-sm-4" data-bs-toggle="modal" data-bs-target="#instructions">INSTRUCCIONES</button>
@@ -25,9 +25,9 @@
     </div>
 </main>
 <!-- Modal -->
-<div class="modal fade" id="instructions" tabindex="-1" aria-labelledby="instrLabel" aria-hidden="true">
+<div class="modal fade main-modal" id="instructions" tabindex="-1" aria-labelledby="instrLabel" aria-hidden="true">
     <div class="modal-dialog">
-        <div class="modal-content">
+        <div class="modal-content bg-lshades">
             <div class="modal-header">
                 <h5 class="modal-title" id="instrLabel">¿Como Jugar?</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
