@@ -10,4 +10,8 @@ function changeTimer() {
   document.getElementById("timer").value = currSec-1;
 }
 
+function submitVals() {
+  document.getElementById("submit-btn").click();
+}
+
 

@@ -1,25 +1,29 @@
 {% extends 'quiz/head.html' %}
 {% load static %}
 
+{% block view_stylesheet %} {% static 'quiz/css/quiz.css' %} {% endblock %}
+
 {% block content %}
-<main class="container bg-primary">
-    <div class="row justify-content-center bg-warning">
-        <div class="col d-flex flex-column col-md-8 bg-danger justify-content-center align-items-center vh-100">
-        <form class="d-flex flex-column w-75 bg-info align-items-center" action="{% url 'question' question.id %}" method="post">
+{% include 'quiz/header.html' %}
+
+<main class="container">
+    <div class="row justify-content-center align-items-center bg-transparent vh-100">
+        <form class="main-container col-12 col-sm-10 col-lg-7" action="{% url 'question' question.id %}" method="post">
         {% csrf_token %}
-        <label for="timer">TIEMPO RESTANTE</label>
-        <input type="text" id="timer" name="timerVal" value="15" readonly>
+        <div class="d-flex flex-column align-items-center p-3">
+        <label class="label-timer col-8" for="timer">TIEMPO RESTANTE</label>
+        <input class="col-4 col-sm-3 col-lg-2" type="text" id="timer" name="timerVal" value="15" readonly>
+        </div>
         <fieldset class="d-flex flex-column form-group p-3 align-items-stretch">
-            <legend class=""><h1>{{ question.question_text }}</h1></legend>
+            <legend class="question-text"><h1>{{ question.question_text }}</h1></legend>
             {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
             {% for choice in question.choice_set.all %}
                 <input type="radio" class="btn-check p-3" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}">
-                <label class="btn btn-secondary p-3 mb-1" for="choice{{ forloop.counter }}">{{ choice.choice_text }}</label><br>
+                <label class="btn btn-primary p-3 mb-1" for="choice{{ forloop.counter }}" onclick="submitVals()">{{ choice.choice_text }}</label><br>
             {% endfor %}
         </fieldset>
-        <div><input type="submit" value="Vote" id="submit-btn"></div>
+        <div hidden><input type="submit" value="Vote" id="submit-btn"></div>
         </form>
-        </div>
     </div>
 </main>
 <script src="{% static 'quiz/javascript/timer.js' %}" ></script>
