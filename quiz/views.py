@@ -21,9 +21,6 @@ def start(request):
 
     last_session = Answer.sessions.get_last_session(request.user.id)
 
-    if not last_session:
-        last_session = 0
-
     request.session['game_ended'] = False 
     request.session['questions'] = questions_selected
     request.session['game_session'] = last_session + 1

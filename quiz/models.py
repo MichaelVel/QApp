@@ -22,7 +22,8 @@ class Choice(models.Model):
 
 class AnswerSessionManager(models.Manager):
     def get_last_session(self, user_id):
-        return self.filter(user=user_id).aggregate(models.Max('session'))['session__max']
+        ls = self.filter(user=user_id).aggregate(models.Max('session'))['session__max']
+        return 0 if not ls else ls
 
     def score(self, user_id, session_id):
         score = self.filter(user__id=user_id, session=session_id)
