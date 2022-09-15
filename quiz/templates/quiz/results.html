@@ -1,43 +1,58 @@
 {% extends 'quiz/head.html' %}
+{% load static %}
+
+{% block view_stylesheet %} {% static 'quiz/css/results.css' %} {% endblock %}
 
 {% block content %}
 {% include 'quiz/header.html' %}
 
-<main class="container-fluid bg-primary vh-100"> 
-    <div class="row justify-content-md-center bg-danger vh-100">
-        <div class="d-flex flex-column bg-warning justify-content-center align-items-center w-75"> 
-            <h1>QApp</h1>
-            <p> PUNTUACIÓN:</p>
-            <div> {{ score }}</div>
-            <div class="w-50"> 
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th scope="col">#</th>
-                            <th scope="col">JUGADOR</th>
-                            <th scope="col">PUNTAJE</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for score in top5 %} 
-                            <tr>
-                                <th scope="row">{{ forloop.counter }}</th>
-                                <td> {{ score.user__username }}</td>
+<main class="container"> 
+    <div class="row justify-content-center align-items-center vh-100">
+        <div class="main-container col-12"> 
+            <div class="row justify-content-center p-3">
+                <div class="col-11 col-sm-10 col-lg-8 p-0">
+                    <div class="d-flex justify-content-center">
+                        <object class="col-8" data="{% static 'quiz/img/logo.svg'%}">
+                        </object>
+                    </div>
+                </div>
+            </div>
+            <div class="row justify-content-center g-0">
+                <p class="col-12 score-text p-0 m-0"> PUNTUACIÓN:</p>
+                <p class="col-2 score p-0">{{ score }}</p>
+            </div>
+            <div class="row justify-content-center p-4"> 
+                <div class="col-11 col-sm-10 col-lg-8">
+                    <table class="table table-striped score-table">
+                        <thead>
+                            <tr class="t-header">
+                                <th class="t-header-col" scope="col">#</th>
+                                <th class="t-header-col" scope="col">JUGADOR</th>
+                                <th class="t-header-col" scope="col">PUNTAJE</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for score in top5 %} 
+                            <tr class="t-row">
+                                <th class="t-row-h" scope="row">{{ forloop.counter }}</th>
+                                <td class="t-cell"> {{ score.user__username }}</td>
                                 <td> {{ score.score }}</td>
                             </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-            <div class="d-flex flex-row justify-content-end bg-secondary w-50">
-                <form action="{% url 'start' %}" method="post" class="">
-                {% csrf_token %}
-                <button class="btn btn-primary btn-md m-1">REINTENTAR</button>
-            </form>
-            <form action="{% url 'index' %}" method="post" class="">
-                {% csrf_token %}
-                <button  class="btn btn-info btn-md m-1">INICIO</button>
-            </form>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+                <div class="col-11 col-sm-10 col-lg-8 p-0">
+                    <div class="d-flex flex-row justify-content-end">
+                        <form action="{% url 'start' %}" method="post" class="">
+                            {% csrf_token %}
+                            <button class="btn btn-primary btn-md m-1">REINTENTAR</button>
+                        </form>
+                        <form action="{% url 'index' %}" method="post" class="">
+                            {% csrf_token %}
+                            <button  class="btn btn-info btn-md m-1">INICIO</button>
+                        </form>
+                </div>
             </div> 
         </div>
     </div>
