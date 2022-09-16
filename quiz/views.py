@@ -1,6 +1,7 @@
 import random
-from django.core.exceptions import ObjectDoesNotExist
 
+from django.core.exceptions import ObjectDoesNotExist
+from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseNotFound
 from django.shortcuts import render, redirect
 from django.views import View
@@ -10,8 +11,13 @@ from django.views.generic.base import TemplateView
 from .models import Choice, Question,Answer
 
 def index(request): 
-    return render(request,'quiz/index.html')
+    context = {}
+    if (next_val := request.GET.get('next',None)) is not None:
+        context["next"] = next_val
 
+    return render(request,'quiz/index.html', context)
+
+@login_required(redirect_field_name='next',login_url="/")
 def start(request):
     questions_ids = list(Question.objects.values('id'))
     questions_ids = list(map(lambda x: x["id"], questions_ids))
@@ -74,6 +80,7 @@ def end(request):
         try:
             choice = Choice.objects.get(pk=choice_id)
         except ObjectDoesNotExist:
+            # When time runs out
             choice = None
 
         answer = Answer(session=game_session,

@@ -42,4 +42,15 @@
     </div>
 </div>
 
+{% if next %}
+    {% block scripts %}
+    <script>
+    function pleaseLogIn() {
+        document.getElementById("user-button").click()
+    }
+    pleaseLogIn()
+    </script>
+    {% endblock %}
+{% endif %}
+
 {% endblock %}
