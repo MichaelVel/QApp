@@ -8,7 +8,7 @@ class MockFactory:
         questions: list[Question] = []
 
         for i in range(1, n_q+1):
-            questions.append(Question(question_text = f"q{i}",
+            questions.append(Question.objects.create(question_text = f"q{i}",
                 pub_date = timezone.now()))
             
         return questions
@@ -18,10 +18,10 @@ class MockFactory:
         answers: list[Choice] = []
 
         for _ in range(n_ans-1):
-            answers.append(Choice(choice_text="false",
+            answers.append(Choice.objects.create(choice_text="false",
                 question=question, is_correct=False))
          
-        answers.append(Choice(choice_text="true", 
+        answers.append(Choice.objects.create(choice_text="true", 
             question=question, is_correct=True))
 
         return answers
@@ -36,12 +36,16 @@ class MockFactory:
     
     @staticmethod
     def test_user(n:int) -> User:
-        return User(username=f"userTestCase{n}", password="pass")
+        return User.objects.create_user(username=f"userTestCase{n}", password="pass")
+
+    @staticmethod
+    def test_superuser() -> User:
+        return User.objects.create_superuser(username="super", password="pass")
 
     @staticmethod
     def test_answer(session:int, question:Question,
             user: User, choice: Choice, time: int) -> Answer: 
-        return Answer(session=session,
+        return Answer.sessions.create(session=session,
                 question=question,
                 user=user,
                 choice= choice,
