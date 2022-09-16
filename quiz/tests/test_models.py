@@ -1,47 +1,6 @@
-from django.contrib.auth.models import User
+from .mocks import MockFactory
 from django.test import TestCase
-from django.utils import timezone
-from .models import Answer, Question, Choice
-
-class MockFactory:
-    @staticmethod
-    def empty_questions(n_q: int) -> list[Question]:
-        questions: list[Question] = []
-
-        for i in range(1, n_q+1):
-            questions.append(Question(question_text = f"q{i}",
-                pub_date = timezone.now()))
-            
-        return questions
-    
-    @staticmethod
-    def generic_choices(question: Question, n_ans: int) -> list[Choice]:
-        answers: list[Choice] = []
-
-        for _ in range(n_ans-1):
-            answers.append(Choice(choice_text="false",
-                question=question, is_correct=False))
-         
-        answers.append(Choice(choice_text="true", 
-            question=question, is_correct=True))
-
-        return answers
-
-    @staticmethod
-    def test_user(n:int) -> User:
-        return User(username=f"userTestCase{n}", password="pass")
-
-    @staticmethod
-    def test_answer(session:int, question:Question,
-            user: User, choice: Choice, time: int) -> Answer: 
-        return Answer(session=session,
-                question=question,
-                user=user,
-                choice= choice,
-                pub_date = timezone.now(),
-                time = time
-                )
-
+from quiz.models import Answer
 
 class TestAnswerModel(TestCase):
     @classmethod
@@ -66,11 +25,13 @@ class TestAnswerModel(TestCase):
 
     def test_get_last_session_when_user_has_played_at_least_once(self):
         n = 5
+        question = self.questions[1]
         for i in range(n+1):
-            answer = Answer(session=i,
-                question= self.questions[1],
-                user= self.user1,
-                pub_date=timezone.now())
+            answer = MockFactory.test_answer(i,
+                    question,
+                    self.user1,
+                    MockFactory.get_correct_choice(question),
+                    0)
             answer.save()
 
         session = Answer.sessions.get_last_session(self.user1.id)
@@ -82,7 +43,7 @@ class TestAnswerModel(TestCase):
             answer = MockFactory.test_answer(1,
                     question,
                     self.user2,
-                    Answer.sessions.get_correct_choice(question),
+                    MockFactory.get_correct_choice(question),
                     10)
             answer.save()
 

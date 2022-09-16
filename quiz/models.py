@@ -28,10 +28,6 @@ class AnswerSessionManager(models.Manager):
     def get_last_session(self, user_id: int) -> int:
         ls: int= self.filter(user=user_id).aggregate(models.Max('session'))['session__max']
         return 0 if not ls else ls
-    
-    def get_correct_choice(self, question: Question) -> Choice:
-        return Choice.objects.filter(question=question, is_correct=True)[0]
-
 
     def score(self, user_id: int, session_id: int) -> int:
         score: QuerySet = self.filter(user__id=user_id, session=session_id)
