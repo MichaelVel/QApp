@@ -45,9 +45,11 @@ class QuestionView(View):
 
         # Store the answers in cache
         answers = request.session.get('answers')
-        answers.append((question_id,
+        answers.append(
+            (question_id,
             request.POST.get('choice'),
-            request.POST['timerVal']))
+            request.POST.get('timerVal'))
+        )
 
         request.session['answers'] = answers
 
@@ -56,13 +58,12 @@ class QuestionView(View):
 
         if not questions:
             request.session['game_ended'] = True 
-            return redirect(end)
+            return redirect('end')
 
         question_id = questions.pop()
         request.session['questions'] = questions
-        question = Question.objects.get(id=question_id)
 
-        return render(request, 'quiz/quiz.html', {'question': question})
+        return self.get(request,question_id)
 
 
 def end(request):
@@ -71,10 +72,10 @@ def end(request):
     answers into the database.
     """
     game_results = request.session.get("answers")
-    game_session = request.session["game_session"]
+    game_session = request.session.get("game_session")
    
     if not game_results:
-        return HttpResponseNotFound("hello")
+        return HttpResponseNotFound(b"hello")
 
     for question_id, choice_id, timer_val in game_results:
         try:
@@ -95,6 +96,7 @@ def end(request):
     del request.session["answers"]
 
     return redirect('results')
+
 
 class ResultsView(TemplateView):
     template_name = "quiz/results.html"

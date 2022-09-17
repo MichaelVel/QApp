@@ -1,5 +1,6 @@
-from django.contrib.auth.models import User
-from django.test import Client, TestCase
+from django.test import Client, RequestFactory, TestCase
+
+from quiz.views import QuestionView
 
 from .mocks import MockFactory
 
@@ -39,16 +40,48 @@ class TestStartView(TestCase):
         self.assertRedirects(response, '/?next=%2Fquiz%2Fstart')
 
 class TestQuestionView(TestCase):
-    def last_question(self ):
-        pass
+    @classmethod
+    def setUpTestData(cls):
+        cls.view = QuestionView()
+        
+        questions = MockFactory.empty_questions(5)
+        for question in questions:
+            MockFactory.generic_choices(question,3)
+        
+    
+    def test_game_ended(self):
+        """ If the flag 'game_ended' is set, the view redirects to index """ 
+        request = RequestFactory().post('/quiz/1')
+        request.session = {"game_ended": True }
+        response = QuestionView.as_view()(request,1)
+
+        # It's not necessary to render the redirected url
+        self.assertRedirects(response, '/',fetch_redirect_response=False)
+
+    def test_last_question(self):
+        """ 
+        When there is no more answers in the survey to fetch redirects to 
+        end view.
+        """
+        request = RequestFactory().post('/quiz/1')
+        request.session = {
+                "game_ended": False,
+                "answers": [],
+                "questions": [],
+        }
+        response = QuestionView.as_view()(request,1)
+
+        # It's not necessary to render the redirected url
+        self.assertRedirects(response, '/quiz/finish', fetch_redirect_response=False)
 
 class TestEndView(TestCase):
-    def not_answers_in_session_cache(self):
+    def test_not_answers_in_session_cache(self):
         """ 
         Redirect to index if the view is access without have complete a
         survey
         """
-        pass
+        response = self.client.get("/quiz/finish")
+        self.assertEqual(response.status_code,404)
 
 class TestResultsView:
     """
