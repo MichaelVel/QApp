@@ -25,7 +25,7 @@ def start(request):
     questions_selected = random.sample(questions_ids,3)
     first_question = questions_selected.pop()
 
-    last_session = Answer.sessions.get_last_session(request.user.id)
+    last_session = Answer.objects.get_last_session(request.user.id)
 
     request.session['game_ended'] = False 
     request.session['questions'] = questions_selected
@@ -103,8 +103,8 @@ class ResultsView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['score'] = Answer.sessions.score(
+        context['score'] = Answer.objects.score(
                 self.request.user.id, 
                 self.request.session['game_session'])
-        context['top5'] = Answer.sessions.top5_scores()
+        context['top5'] = Answer.objects.top5_scores()
         return context

@@ -13,6 +13,6 @@ class QuestionAdmin(admin.ModelAdmin):
     ]
     inlines = [ChoiceInLine]    
 
-    list_display = ['question_text', 'pub_date']
+    list_display = ['question_text']
 
 admin.site.register(Question,QuestionAdmin)
