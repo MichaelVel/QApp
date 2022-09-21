@@ -1,0 +1,18 @@
+<h1> CREA TU PROPIO TEST </h1>
+<form action="/create-survey" method="post">
+    {% csrf_token %}
+    {{ survey }}
+    {% for question in question_formset %}
+        <fieldset>
+        <legend>{{ question.get_name }}</legend>
+        {{ question.as_p }}
+        {% for choice in question.get_choices %}
+            <div>
+                <input type="radio" name="{{ question.get_prefix }}-choice_set" value="choice-{{ forloop.counter0 }}">
+                {{choice}}
+            </div>
+        {% endfor %}
+        </fieldset>
+    {% endfor %}
+    <input type="submit" value="Submit">
+</form>

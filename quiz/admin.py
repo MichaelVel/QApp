@@ -1,18 +1,28 @@
 from django.contrib import admin
 
-from .models import Question, Choice
+from .models import Question, Choice, Survey
 
 class ChoiceInLine(admin.TabularInline):
     model = Choice
     extra = 4
 
+class QuestionInLine(admin.TabularInline):
+    model = Question
+    extra = 4
+
+
 class QuestionAdmin(admin.ModelAdmin):
     fieldsets =  [
             (None,  {'fields': ['question_text']}),
-            ('Date Information', {'fields': ['pub_date'], 'classes': ['collapse']}),
+            #('Date Information', {'fields': ['pub_date'], 'classes': ['collapse']}),
     ]
     inlines = [ChoiceInLine]    
 
-    list_display = ['question_text']
+class SurveyAdmin(admin.ModelAdmin):
+    fieldsets = [
+            (None, {'fields': ['topic', 'status']}),
+    ]
+    inlines = [QuestionInLine,]
 
-admin.site.register(Question,QuestionAdmin)
+admin.site.register(Survey, SurveyAdmin)
+admin.site.register(Question, QuestionAdmin)

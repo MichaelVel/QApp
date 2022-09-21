@@ -1,4 +1,5 @@
 from django.db import models
+from django.utils import timezone
 from django.contrib.auth.models import User
 from django.db.models import QuerySet, Sum
 
@@ -40,6 +41,15 @@ class Survey(models.Model):
 
     def __str__(self):
         return f"Survey of {self.user} in {self.topic}. STATUS: {self.status}"
+    
+    @staticmethod
+    def from_form(request, survey_from_form: 'Survey') -> 'Survey':
+        survey_from_form.user = request.user
+        survey_from_form.status = Survey.StateSurvey.REVIEW
+        survey_from_form.creation_date = timezone.now()
+        return survey_from_form
+
+
 
 class Question(models.Model):
     objects = models.Manager()
@@ -55,6 +65,18 @@ class Question(models.Model):
     def __str__(self):
        return self.question_text 
 
+    @staticmethod
+    def questions_from_form(request) -> list['Question']:
+        questions = []
+        for q in request.POST:
+            if 'question_text' not in q:
+                continue
+            question = Question()
+            question.question_text = request.POST[q]
+            questions.append(question)
+
+        return questions
+
 class Choice(models.Model):
     objects = models.Manager()
 
@@ -64,6 +86,19 @@ class Choice(models.Model):
 
     def __str__(self):
         return self.choice_text
+
+    @staticmethod
+    def choices_from_form(request) -> list['Choice']:
+        choices = []
+        for ch in request.POST:
+            if 'choice_text' not in ch:
+                continue
+            choice = Choice()
+            choice.choice_text = request.POST[ch]
+            choice.is_correct = False 
+            choices.append(choice)
+
+        return choices
 
 class GameSession(models.Model):
     objects = models.Manager()

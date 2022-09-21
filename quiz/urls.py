@@ -1,7 +1,7 @@
 from django.urls import path
 
 from . import views
-from .views import QuestionView, ResultsView
+from .views import CreateSurveyView, QuestionView, ResultsView
 
 urlpatterns = [
         path('', views.index, name='index'),
@@ -9,4 +9,5 @@ urlpatterns = [
         path('quiz/<int:question_id>/', QuestionView.as_view(), name='question'),
         path('quiz/finish', views.end, name='end'),
         path('quiz/results', ResultsView.as_view(), name='results'),
+        path('create-survey', CreateSurveyView.as_view(), name='create'),
 ]

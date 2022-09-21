@@ -7,8 +7,11 @@ from django.shortcuts import render, redirect
 from django.views import View
 from django.utils import timezone
 from django.views.generic.base import TemplateView
+from django.views.generic.edit import FormView
 
-from .models import Choice, Question,Answer
+from .forms import QuestionFormSet, SurveyForm
+from .models import Choice, Question, Answer, Survey
+
 
 def index(request): 
     context = {}
@@ -33,6 +36,26 @@ def start(request):
     request.session['answers'] = []
     return redirect('question', question_id=first_question)
 
+class CreateSurveyView(TemplateView):
+    template_name = 'quiz/create-survey.html'
+    success_url = '/'
+
+    def get_context_data(self, **kwargs):
+        context = super(CreateSurveyView, self).get_context_data(**kwargs)
+
+        context['question_formset'] = QuestionFormSet(prefix='question')
+        context['survey'] = SurveyForm()
+        return context
+
+    def post(self, request, *args, **kwargs):
+        survey_form = SurveyForm(request.POST)
+        survey: Survey = survey_form.save(commit=False)
+        survey = Survey.from_form(request, survey)
+        #survey.save()
+        
+        questions = Question.questions_from_form(request)
+        choices = Choice.choices_from_form(request)
+        return HttpResponse(choices)
 
 class QuestionView(View):
     def get(self,request,question_id):
