@@ -104,8 +104,8 @@ class Choice(models.Model):
     @staticmethod
     def from_form(data_form) -> dict[str, Any]:
         """
-        Takes a dict with the data of the form and a Survey object. Creates
-        the questions with this object and update the dict.
+        Takes a dict with the data of the form and Questions objects. Create
+        the Choices objects of this Questions and return the updated dict.
         """
         for key, val in data_form.items():
             if 'question' not in key:
