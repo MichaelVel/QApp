@@ -1,18 +1,45 @@
-<h1> CREA TU PROPIO TEST </h1>
-<form action="/create-survey" method="post">
-    {% csrf_token %}
-    {{ survey }}
-    {% for question in question_formset %}
-        <fieldset>
-        <legend>{{ question.get_name }}</legend>
-        {{ question.as_p }}
-        {% for choice in question.get_choices %}
-            <div>
-                <input type="radio" name="{{ question.get_prefix }}-choice_set" value="choice-{{ forloop.counter0 }}">
-                {{choice}}
-            </div>
-        {% endfor %}
-        </fieldset>
-    {% endfor %}
-    <input type="submit" value="Submit">
-</form>
+{% extends 'quiz/head.html' %}
+{% load static %}
+
+{% block view_stylesheet %} {% static 'quiz/css/create.css' %} {% endblock %}
+
+{% block content %}
+
+<main class="container">
+    <div class="row justify-content-center align-items-center bg-transparent">
+        <div class="main-container col-12 col-sm-10 col-lg-7">
+        <h1 class="create-title"> CREA TU PROPIO TEST </h1>
+        <form class="form p-2" action="/create-survey" method="post">
+            {% csrf_token %}
+            {{ survey }}
+            {% for question in question_formset %}
+                <fieldset class="border p-2 m-1">
+                <legend>{{ question.get_name }}</legend>
+                <div class="col-12 p-1">
+                    <div class="d-flex flex-column align-items-stretch">
+                        {{ question.question_text}}
+                    </div>
+                </div>
+                {% for choice in question.get_choices %}
+                    <div class="row align-items-center">
+                        <div class="col-1 p-1 m-1 ">
+                            <div class="d-flex flex-row-reverse">
+                            <input type="radio" class="form-check-input" name="{{ question.get_prefix }}-choice_set" value="choice-{{ forloop.counter0 }}">
+                            </div>
+                        </div>
+                        <div class="col-10 p-1 m-1">
+                                <div class="d-flex flex-column align-items-stretch">
+                                {{choice.choice_text}}
+                                </div>
+                        </div>
+                    </div>
+                {% endfor %}
+                </fieldset>
+            {% endfor %}
+            <input type="submit" value="Submit">
+        </form>
+        </div>
+    </div>
+</main>
+
+{% endblock %}

@@ -1,6 +1,5 @@
 from django import forms
-from django.forms import modelformset_factory
-
+from django.forms import BaseModelFormSet, modelformset_factory
 from .models import Choice, Question, Survey
 
 class ChoiceForm(forms.ModelForm):
@@ -35,8 +34,15 @@ class SurveyForm(forms.ModelForm):
         fields = ['topic']
         labels = {'topic': 'Escoge un tema'}
 
+class QuestionFormset(BaseModelFormSet):
+    def __init__(self, *args, **kwargs):
+        super(QuestionFormset, self).__init__(*args, **kwargs)
+        self.queryset = Question.objects.none()
+
 QuestionFormSet =  modelformset_factory( 
         Question,
-        form=QuestionForm, extra=3,)
+        form=QuestionForm, 
+        formset=QuestionFormset,
+        extra=3,)
 
 
