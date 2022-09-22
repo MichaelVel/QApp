@@ -1,13 +1,14 @@
 import random
+import re
+from typing import Any
 
-from django.core.exceptions import ObjectDoesNotExist
 from django.contrib.auth.decorators import login_required
-from django.http import HttpResponse, HttpResponseNotFound
+from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render, redirect
-from django.views import View
+from django.http import HttpResponseNotFound
 from django.utils import timezone
+from django.views import View
 from django.views.generic.base import TemplateView
-from django.views.generic.edit import FormView
 
 from .forms import QuestionFormSet, SurveyForm
 from .models import Choice, Question, Answer, Survey
@@ -47,15 +48,46 @@ class CreateSurveyView(TemplateView):
         context['survey'] = SurveyForm()
         return context
 
+    def process_request(self,request) -> dict[str,dict[str,Any]]:
+        form_data = {
+                'survey' : {
+                    'topic': request.POST['topic'],
+                    'user': request.user,
+                },
+        }
+
+        for key in request.POST:
+            if 'question' not in key:
+                continue
+            question = re.search(r'(question-\d+)-', key).group(1)
+            form_data.setdefault(question, dict())
+            
+            if 'question_text' in key:
+                form_data[question]['question_text'] = request.POST[key]
+
+            if 'choice' not in key:
+                continue
+
+            if 'choice_text' in key:
+                choice = re.search(r'(choice-\d+)-', key).group(1)
+                form_data[question].setdefault(choice, {'is_correct': False})
+                form_data[question][choice]['choice_text'] = request.POST[key]
+
+            if 'choice_set' in key:
+                correct_choice = request.POST[key]
+                form_data[question].update({correct_choice:{'is_correct':True}})
+
+        return form_data
+
     def post(self, request, *args, **kwargs):
-        survey_form = SurveyForm(request.POST)
-        survey: Survey = survey_form.save(commit=False)
-        survey = Survey.from_form(request, survey)
-        #survey.save()
-        
-        questions = Question.questions_from_form(request)
-        choices = Choice.choices_from_form(request)
-        return HttpResponse(choices)
+        form_data = self.process_request(request)
+        form_data = Survey.from_form(form_data)
+        form_data = Question.from_form(form_data)
+        form_data = Choice.from_form(form_data)
+        return redirect('index')
+
+    
+
 
 class QuestionView(View):
     def get(self,request,question_id):

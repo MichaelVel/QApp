@@ -1,3 +1,4 @@
+from typing import Any
 from django.db import models
 from django.utils import timezone
 from django.contrib.auth.models import User
@@ -43,11 +44,18 @@ class Survey(models.Model):
         return f"Survey of {self.user} in {self.topic}. STATUS: {self.status}"
     
     @staticmethod
-    def from_form(request, survey_from_form: 'Survey') -> 'Survey':
-        survey_from_form.user = request.user
-        survey_from_form.status = Survey.StateSurvey.REVIEW
-        survey_from_form.creation_date = timezone.now()
-        return survey_from_form
+    def from_form(data_form) -> dict[str,Any]:
+        """
+        Takes a dict with the data of the form, and update it with a
+        Survey object.
+        """
+        survey = Survey(topic = data_form['survey']['topic'],
+                creation_date = timezone.datetime.now(),
+                user = data_form['survey']['user']
+                )
+        survey.save()
+        data_form['survey'] = survey
+        return data_form
 
 
 
@@ -66,16 +74,22 @@ class Question(models.Model):
        return self.question_text 
 
     @staticmethod
-    def questions_from_form(request) -> list['Question']:
-        questions = []
-        for q in request.POST:
-            if 'question_text' not in q:
-                continue
-            question = Question()
-            question.question_text = request.POST[q]
-            questions.append(question)
+    def from_form(data_form) -> dict[str,Any]:
+        """
+        Takes a dict with the data of the form and a Survey object. Creates
+        the questions with this object and update the dict.
+        """
+        survey = data_form['survey']
 
-        return questions
+        for key, val in data_form.items():
+            if 'question' not in key:
+                continue
+            text = val.pop('question_text')
+            question = Question(question_text = text, survey = survey)
+            question.save()
+            val.update({'question': question})
+
+        return data_form
 
 class Choice(models.Model):
     objects = models.Manager()
@@ -88,17 +102,26 @@ class Choice(models.Model):
         return self.choice_text
 
     @staticmethod
-    def choices_from_form(request) -> list['Choice']:
-        choices = []
-        for ch in request.POST:
-            if 'choice_text' not in ch:
+    def from_form(data_form) -> dict[str, Any]:
+        """
+        Takes a dict with the data of the form and a Survey object. Creates
+        the questions with this object and update the dict.
+        """
+        for key, val in data_form.items():
+            if 'question' not in key:
                 continue
-            choice = Choice()
-            choice.choice_text = request.POST[ch]
-            choice.is_correct = False 
-            choices.append(choice)
+            question = val.get('question')
+            for key2, val2 in val.items():
+                if 'choice' not in key2:
+                    continue
+                choice = Choice(
+                        choice_text = val2.get('choice_text'),
+                        is_correct = val2.get('is_correct'),
+                        question = question)
+                choice.save()
+                val.update({key2:choice})
 
-        return choices
+        return data_form
 
 class GameSession(models.Model):
     objects = models.Manager()
