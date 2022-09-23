@@ -15,6 +15,19 @@
         <div class="container">
             <form action="quiz/start" method="post" class="row justify-content-center">
             {% csrf_token %}
+                <div class="col-6 bg-warning">
+                    <div class="row justify-content-center">
+                {{ survey.topic}}
+                    </div>
+                    {% if failed_load_game %}
+                    <!-- 
+                        TODO: Create Failed Message 
+                        It must says if currently there are no test of a 
+                        given topic.
+                    -->
+                    {% endif %}
+                </div>
+                <div class="col-12"></div>
                 <button class="btn btn-primary  m-1 col-10 col-sm-4 ">INICIAR</button>
             </form>
             <div class="row justify-content-center">
@@ -42,15 +55,16 @@
     </div>
 </div>
 
-{% if next %}
-    {% block scripts %}
+
+{% endblock %}
+
+{% block scripts %}
+{% if pop_up_login %}
     <script>
     function pleaseLogIn() {
         document.getElementById("user-button").click()
     }
     pleaseLogIn()
     </script>
-    {% endblock %}
 {% endif %}
-
 {% endblock %}

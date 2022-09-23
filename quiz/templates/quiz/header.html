@@ -33,15 +33,18 @@
             {{ request.user.username }}
         </button>
         <div class="dropdown-menu">
-            <form action="/accounts/logout/" method="post" class="dropdown-item">
-                {% csrf_token %}
-                <button type="submit" class="btn dropdown-item">Salir</button>
-            </form>
             {% if user.is_staff %}
-            <button class="btn dropdown-item" onclick="location.href+='admin/'">
+            <button class="btn dropdown-item" onclick="location.href='/admin/'">
                 Administración
             </button>            
             {% endif %}
+            <button class="btn dropdown-item" onclick="location.href='/create-survey'">
+                Crear Quiz
+            </button>            
+            <form action="/accounts/logout/" method="post" class="dropdown-item p-0">
+                {% csrf_token %}
+                <button type="submit" class="btn dropdown-item">Salir</button>
+            </form>
         </div>
 
         {% endif %}

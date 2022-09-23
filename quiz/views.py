@@ -1,6 +1,7 @@
 import random
 import re
 from typing import Any
+import logging
 
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist
@@ -13,13 +14,21 @@ from django.views.generic.base import TemplateView
 from .forms import QuestionFormSet, SurveyForm
 from .models import Choice, Question, Answer, Survey
 
+class IndexView(TemplateView):
+    template_name = 'quiz/index.html'
 
-def index(request): 
-    context = {}
-    if (next_val := request.GET.get('next',None)) is not None:
-        context["next"] = next_val
-
-    return render(request,'quiz/index.html', context)
+    def get_context_data(self, **kwargs):
+        context = super(IndexView, self).get_context_data(**kwargs)
+        context['survey'] = SurveyForm()
+        context['pop_up_login'] = False
+        context['failed_load_game'] = False
+        
+        init_button_request = self.request.GET.get('next')
+        if init_button_request == '/quiz/start':
+            context['pop_up_login'] = True
+            pass
+        logging.debug(context)
+        return context
 
 @login_required(redirect_field_name='next',login_url="/")
 def start(request):
@@ -43,7 +52,6 @@ class CreateSurveyView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(CreateSurveyView, self).get_context_data(**kwargs)
-
         context['question_formset'] = QuestionFormSet(prefix='question')
         context['survey'] = SurveyForm()
         return context
