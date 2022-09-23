@@ -1,13 +1,19 @@
 from django.urls import path
 
-from . import views
-from .views import IndexView, CreateSurveyView, QuestionView, ResultsView
+from .views import (
+        IndexView,
+        CreateSurveyView, 
+        StartView,
+        QuestionView,
+        EndView,
+        ResultsView
+        )
 
 urlpatterns = [
         path('', IndexView.as_view(), name='index'),
-        path('quiz/start', views.start, name='start'),
-        path('quiz/<int:question_id>/', QuestionView.as_view(), name='question'),
-        path('quiz/finish', views.end, name='end'),
+        path('quiz/start', StartView.as_view(), name='start'),
+        path('quiz/play', QuestionView.as_view(), name='question'),
+        path('quiz/finish', EndView.as_view(), name='end'),
         path('quiz/results', ResultsView.as_view(), name='results'),
         path('create-survey', CreateSurveyView.as_view(), name='create'),
 ]

@@ -8,7 +8,7 @@
 
 <main class="container">
     <div class="row justify-content-center align-items-center bg-transparent vh-100">
-        <form class="main-container col-12 col-sm-10 col-lg-7" action="{% url 'question' question.id %}" method="post">
+        <form class="main-container col-12 col-sm-10 col-lg-7" action="{% url 'question' %}" method="post">
         {% csrf_token %}
         <div class="d-flex flex-column align-items-center p-3">
         <label class="label-timer col-8" for="timer">TIEMPO RESTANTE</label>
@@ -18,10 +18,14 @@
             <legend class="question-text"><h1>{{ question.question_text }}</h1></legend>
             {% if error_message %}<p><strong>{{ error_message }}</strong></p>{% endif %}
             {% for choice in question.choice_set.all %}
-                <input type="radio" class="btn-check p-3" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}">
-                <label class="btn btn-primary p-3 mb-1" for="choice{{ forloop.counter }}" onclick="submitVals()">{{ choice.choice_text }}</label><br>
+                <input type="radio" class="btn-check p-3" name="choice" id="choice{{ forloop.counter }}" value="{{ choice.id }}" onclick="submitVals()">
+                <label class="btn btn-primary p-3 mb-1" for="choice{{ forloop.counter }}">{{ choice.choice_text }}</label><br>
             {% endfor %}
         </fieldset>
+        <div hidden>
+            <input type="number" readonly name="question_id" value="{{question.id}}">
+        </div>
+            
         <div hidden><input type="submit" value="Vote" id="submit-btn"></div>
         </form>
     </div>

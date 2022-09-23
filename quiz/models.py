@@ -39,9 +39,10 @@ class Survey(models.Model):
     def n_questions(self):
         """ derived attribute of the Survey Model """
         return self.question_set.count()
-
-    def __str__(self):
-        return f"Survey of {self.user} in {self.topic}. STATUS: {self.status}"
+    
+    @property
+    def questions(self) -> list['Question']:
+        return self.question_set.all()
     
     @staticmethod
     def from_form(data_form) -> dict[str,Any]:
@@ -57,6 +58,8 @@ class Survey(models.Model):
         data_form['survey'] = survey
         return data_form
 
+    def __str__(self):
+        return f"Survey of {self.user} in {self.topic}. STATUS: {self.status}"
 
 
 class Question(models.Model):
@@ -123,8 +126,19 @@ class Choice(models.Model):
 
         return data_form
 
+class GamesSessionManagerScores(models.Manager):
+    def top_5(self):
+        sessions = self.filter(survey__topic='TST')
+        scores = []
+        for session in sessions:
+            scores.append((session.user,session.score))
+        scores = sorted(scores, key= lambda x: x[1], reverse=True)
+        return scores            
+
+
 class GameSession(models.Model):
     objects = models.Manager()
+    scores = GamesSessionManagerScores()
 
     creation_date = models.DateTimeField('date of creation')
     survey = models.ForeignKey(Survey, on_delete=models.CASCADE)
@@ -134,9 +148,13 @@ class GameSession(models.Model):
     def score(self):
         """ derived attribute of the GameSession Model """
         score = self.answer_set.exclude(choice__is_correct=False)
-        score = score.aggergate(score=Sum('interval_time'))
+        score = score.aggregate(score=Sum('interval_time'))
         score = score['score']
         return 0 if score is None else score
+
+    @staticmethod
+    def new_game_session(user,survey) -> 'GameSession':
+        return GameSession(user=user,survey=survey, creation_date = timezone.now())
 
 
 ## All what did this custom manager is now managed by the SessionGame Model. 
@@ -175,5 +193,15 @@ class Answer(models.Model):
             blank=True,
             null=True)
     interval_time = models.IntegerField(default=0)
+
+    @staticmethod
+    def new_answer(session, question, choice, interval_time) -> 'Answer':
+        return Answer(
+                session=session,
+                question=question,
+                choice=choice,
+                interval_time=interval_time)
+
+
 
 

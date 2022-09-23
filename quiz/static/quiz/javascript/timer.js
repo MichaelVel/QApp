@@ -11,7 +11,6 @@ function changeTimer() {
 }
 
 function submitVals() {
-  document.getElementById("submit-btn").click();
+    document.getElementById("submit-btn").click();
 }
-
 
