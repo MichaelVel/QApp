@@ -103,3 +103,8 @@ class MockFactory:
 class MockChoice(Enum):
     Wrong = 0
     Correct = 1
+
+class MockRequest(object):
+    def __init__(self,user:User, post: dict[str,Any]) -> None:
+        self.user = user
+        self.POST = post

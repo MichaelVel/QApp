@@ -45,7 +45,7 @@ class CreateSurveyView(TemplateView):
         context['survey'] = SurveyForm()
         return context
 
-    def process_request(self,request) -> dict[str,dict[str,Any]]:
+    def process_request(self,request) -> dict[str,Any]:
         """ 
         convert the data of the POST request into a object similar to a 
         simple JSON object.
@@ -96,9 +96,9 @@ class StartView(LoginRequiredMixin, RedirectView):
     login_url = '/'
     redirect_field_name = 'next'
 
-    def get_random_survey_from_topic(self):
+    def get_random_survey_from_topic(self,topic):
         surveys = list(Survey.objects.filter(
-                topic=self.request.POST.get('topic'),
+                topic=topic,
                 status=1))                              # Only accepted surveys
         return None if not surveys else random.choice(surveys)
 
@@ -106,12 +106,12 @@ class StartView(LoginRequiredMixin, RedirectView):
         return GameSession.new_game_session(self.request.user, survey)
 
     def get_redirect_url(self, *args, **kwargs):
-        survey = self.get_random_survey_from_topic()
+        topic = self.request.POST.get('topic')
+        survey = self.get_random_survey_from_topic(topic)
 
         if not survey:
             return "/?failed=1"
 
-        self.request.session['game_ended'] = False 
         self.request.session['questions'] = list(survey.questions.values('id'))
         self.request.session['answers'] = []
         self.request.session['game_session'] = serialize(
@@ -148,9 +148,6 @@ class QuestionView(ContextMixin,View):
         return render(request,'quiz/quiz.html',self.context)
 
     def post(self,request, *args, **kwargs):
-        if request.session['game_ended']:
-            return redirect('index')
-
         answers = request.session.pop('answers')
         answers.append((
             request.POST.get('question_id'),
@@ -158,7 +155,6 @@ class QuestionView(ContextMixin,View):
             request.POST.get('timerVal')
         ))
         request.session['answers'] = answers
-        logging.debug(request.session['answers'])
         return self.get(request)
 
 class EndView(RedirectView):
