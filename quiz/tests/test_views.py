@@ -40,53 +40,55 @@ class TestStartView(TestCase):
         self.assertRedirects(response, '/?next=%2Fquiz%2Fstart')
 
 class TestQuestionView(TestCase):
-    @classmethod
-    def setUpTestData(cls):
-        cls.view = QuestionView()
+    pass
+    # @classmethod
+    # def setUpTestData(cls):
+        # cls.view = QuestionView()
         
-        questions = MockFactory.empty_questions(5)
-        for question in questions:
-            MockFactory.generic_choices(question,3)
+        # questions = MockFactory.empty_questions(5)
+        # for question in questions:
+            # MockFactory.generic_choices(question,3)
         
     
-    def test_game_ended(self):
-        """ If the flag 'game_ended' is set, the view redirects to index """ 
-        request = RequestFactory().post('/quiz/1')
-        request.session = {"game_ended": True }
-        response = QuestionView.as_view()(request,1)
+    # def test_game_ended(self):
+        # """ If the flag 'game_ended' is set, the view redirects to index """ 
+        # request = RequestFactory().post('/quiz/1')
+        # request.session = {"game_ended": True }
+        # response = QuestionView.as_view()(request,1)
 
-        # It's not necessary to render the redirected url
-        self.assertRedirects(response, '/',fetch_redirect_response=False)
+        # # It's not necessary to render the redirected url
+        # self.assertRedirects(response, '/',fetch_redirect_response=False)
 
-    def test_last_question(self):
-        """ 
-        When there is no more answers in the survey to fetch redirects to 
-        end view.
-        """
-        request = RequestFactory().post('/quiz/1')
-        request.session = {
-                "game_ended": False,
-                "answers": [],
-                "questions": [],
-        }
-        response = QuestionView.as_view()(request,1)
+    # def test_last_question(self):
+        # """ 
+        # When there is no more answers in the survey to fetch redirects to 
+        # end view.
+        # """
+        # request = RequestFactory().post('/quiz/1')
+        # request.session = {
+                # "game_ended": False,
+                # "answers": [],
+                # "questions": [],
+        # }
+        # response = QuestionView.as_view()(request,1)
 
-        # It's not necessary to render the redirected url
-        self.assertRedirects(response, '/quiz/finish', fetch_redirect_response=False)
+        # # It's not necessary to render the redirected url
+        # self.assertRedirects(response, '/quiz/finish', fetch_redirect_response=False)
 
 class TestEndView(TestCase):
-    def test_not_answers_in_session_cache(self):
-        """ 
-        Redirect to index if the view is access without have complete a
-        survey
-        """
-        response = self.client.get("/quiz/finish")
-        self.assertEqual(response.status_code,404)
+    pass
+    # def test_not_answers_in_session_cache(self):
+        # """ 
+        # Redirect to index if the view is access without have complete a
+        # survey
+        # """
+        # response = self.client.get("/quiz/finish")
+        # self.assertEqual(response.status_code,404)
 
 class TestResultsView:
     """
     Empty Class. The results view just render a template and don't have
-    really logic to be testted at the moment.
+    really logic to be tested at the moment.
     """
     pass
 

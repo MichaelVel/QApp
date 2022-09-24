@@ -51,7 +51,7 @@ class Survey(models.Model):
         Survey object.
         """
         survey = Survey(topic = data_form['survey']['topic'],
-                creation_date = timezone.datetime.now(),
+                creation_date = timezone.now(),
                 user = data_form['survey']['user']
                 )
         survey.save()
@@ -134,7 +134,6 @@ class GamesSessionManagerScores(models.Manager):
             scores.append((session.user,session.score))
         scores = sorted(scores, key= lambda x: x[1], reverse=True)
         return scores            
-
 
 class GameSession(models.Model):
     objects = models.Manager()
