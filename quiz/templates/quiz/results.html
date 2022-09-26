@@ -48,8 +48,7 @@
                             {% csrf_token %}
                             <button class="btn btn-primary btn-md m-1">REINTENTAR</button>
                         </form>
-                        <form action="{% url 'index' %}" method="post" class="">
-                            {% csrf_token %}
+                        <form action="{% url 'index' %}" method="get" class="">
                             <button  class="btn btn-info btn-md m-1">INICIO</button>
                         </form>
                 </div>
