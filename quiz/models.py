@@ -23,7 +23,6 @@ class Survey(models.Model):
         MANGROVE = 'MGV', 'Manglares'
         CORAL_REEF = 'COR', 'Arrecifes de Coral'
     
-    name = models.CharField(max_length=60,default="No name")
     topic = models.CharField(
             max_length=15,
             choices =  SurveyTopics.choices,
@@ -35,6 +34,7 @@ class Survey(models.Model):
     )
     creation_date = models.DateTimeField('date of creation')
     user = models.ForeignKey(User, on_delete=models.CASCADE)
+    name = models.CharField(max_length=60,default="Quiz with no name")
 
     @property
     def n_questions(self):

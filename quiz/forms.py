@@ -1,5 +1,6 @@
 from django import forms
 from django.forms import BaseModelFormSet, modelformset_factory
+from django.forms.fields import TextInput
 from .models import Choice, Question, Survey
 
 class ChoiceForm(forms.ModelForm):
@@ -31,8 +32,19 @@ class QuestionForm(forms.ModelForm):
 class SurveyForm(forms.ModelForm):
     class Meta:
         model = Survey
-        fields = ['topic']
-        labels = {'topic': 'Escoge un tema'}
+        fields = ['topic', 'name']
+        labels = {
+                'topic': 'Escoge un tema',
+                'name': 'Titulo',
+        }
+        widgets = {
+                'name': TextInput(attrs= {
+                    'placeholder': 'Ingresa el titulo del quiz',
+                })
+        }
+
+    def remove_test_option(self):
+        self.fields['topic'].widget.choices.remove(('TST', 'Test Survey'))
 
 class QuestionFormset(BaseModelFormSet):
     def __init__(self, *args, **kwargs):

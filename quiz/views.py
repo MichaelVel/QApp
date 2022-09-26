@@ -20,7 +20,12 @@ class IndexView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(IndexView, self).get_context_data(**kwargs)
-        context['survey'] = SurveyForm()
+        form = SurveyForm() 
+
+        if not self.request.user.is_superuser:
+            form.remove_test_option()
+
+        context['survey'] = form
         context['pop_up_login'] = False
         context['failed_load_game'] = False
         
@@ -41,8 +46,13 @@ class CreateSurveyView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(CreateSurveyView, self).get_context_data(**kwargs)
+        form = SurveyForm(initial={'name': ''})
+
+        if not self.request.user.is_superuser:
+            form.remove_test_option()
+
         context['question_formset'] = QuestionFormSet(prefix='question')
-        context['survey'] = SurveyForm()
+        context['survey'] = form
         return context
 
     def process_request(self,request) -> dict[str,Any]:

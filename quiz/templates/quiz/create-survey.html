@@ -11,7 +11,16 @@
         <h1 class="create-title"> CREA TU PROPIO TEST </h1>
         <form class="form p-2" action="/create-survey" method="post">
             {% csrf_token %}
-            {{ survey }}
+            <div class="row">
+                <div class="col-12 m-1">
+                    <label for="topic">{{ survey.topic.label }}</label>
+                    {{ survey.topic }}
+                </div>
+                <div class="col-12 m-1">
+                    <label for="name">{{ survey.name.label }}</label>
+                    {{ survey.name }}
+                </div>
+            </div>
             {% for question in question_formset %}
                 <fieldset class="border p-2 m-1">
                 <legend>{{ question.get_name }}</legend>
