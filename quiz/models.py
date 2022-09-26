@@ -22,7 +22,8 @@ class Survey(models.Model):
         INSULAR = 'ISL', 'Ecosistemas Insulares'
         MANGROVE = 'MGV', 'Manglares'
         CORAL_REEF = 'COR', 'Arrecifes de Coral'
-
+    
+    name = models.CharField(max_length=60,default="No name")
     topic = models.CharField(
             max_length=15,
             choices =  SurveyTopics.choices,
@@ -127,13 +128,14 @@ class Choice(models.Model):
         return data_form
 
 class GamesSessionManagerScores(models.Manager):
-    def top_5(self):
-        sessions = self.filter(survey__topic='TST')
+    def top_n_scores(self, n: int, survey: Survey):
+        """ Return the top n results of the given survey """
+        sessions = self.filter(survey=survey)
         scores = []
         for session in sessions:
             scores.append((session.user,session.score))
         scores = sorted(scores, key= lambda x: x[1], reverse=True)
-        return scores            
+        return scores[:n]            
 
 class GameSession(models.Model):
     objects = models.Manager()

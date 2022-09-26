@@ -84,13 +84,19 @@ class TestGameSessionModel(TestCase):
         self.play_round(game_session,survey,user_choices)
         self.assertEqual(game_session.score, 0)
 
-    def test_get_top5_scores_only_return_5_results(self):
-        # TODO
-        pass
+    def test_get_top_n_scores_return_the_correct_n_results(self):
+        survey = self.data["survey"]
 
-    def test_get_top5_scores_return_the_correct_results(self):
-        # TODO
-        pass
+        for i in range(10):
+            game_session = MockFactory.test_gamesession(self.user,survey)
+            user_choices = [(MockChoice.Correct,i) for _ in range(survey.n_questions)]
+            self.play_round(game_session,survey,user_choices)
+
+        expected_results = [27, 24, 21, 18, 15, 12, 9, 6, 3, 0]
+        top_5_results = GameSession.scores.top_n_scores(5,survey)
+        top_5_results = list(map(lambda x: x[1], top_5_results))
+        self.assertEqual(expected_results[:5], top_5_results)
+
 
 ## Due the changes in the models these test now are obsolete. Now main logic of
 ## the app is in GameSession, and there is now much to test on the Answer Model

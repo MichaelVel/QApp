@@ -207,6 +207,7 @@ class ResultsView(TemplateView):
         context = super().get_context_data(**kwargs)
         game_session_id = self.request.session.get("game_session")
         game_session = GameSession.objects.get(pk=game_session_id)
+        survey = game_session.survey
         context['score'] = game_session.score
-        context['top5'] = GameSession.scores.top_5()
+        context['top5'] = GameSession.scores.top_n_scores(5,survey)
         return context
