@@ -5,7 +5,7 @@
 
 {% block content %}
 
-<main class="container">
+<main class="container min-vh-100">
     <div class="row justify-content-center align-items-center bg-transparent">
         <div class="main-container col-12 col-sm-10 col-lg-7">
         <h1 class="create-title"> CREA TU PROPIO TEST </h1>
@@ -21,9 +21,13 @@
                     {{ survey.name }}
                 </div>
             </div>
+            <div id="questions-formsets">
             {% for question in question_formset %}
-                <fieldset class="border p-2 m-1">
-                <legend>{{ question.get_name }}</legend>
+            <fieldset class="border p-2 m-1" id="fieldset-question-{{forloop.counter0}}">
+                <div class="d-flex">
+                <legend class="legend"> {{ question.get_name }} </legend>
+                <a href="#remove-question" hidden><i id="remove-question" class="bi bi-x-circle" ></i></a>
+                </div>
                 <div class="col-12 p-1">
                     <div class="d-flex flex-column align-items-stretch">
                         {{ question.question_text}}
@@ -33,7 +37,7 @@
                     <div class="row align-items-center">
                         <div class="col-1 p-1 m-1 ">
                             <div class="d-flex flex-row-reverse">
-                            <input type="radio" class="form-check-input" name="{{ question.get_prefix }}-choice_set" value="choice-{{ forloop.counter0 }}">
+                                <input type="radio" class="form-check-input" name="{{ question.get_prefix }}-choice_set" id="{{ question.get_prefix }}-choice_set-{{ forloop.counter0 }}" value="choice-{{ forloop.counter0 }}">
                             </div>
                         </div>
                         <div class="col-10 p-1 m-1">
@@ -45,10 +49,17 @@
                 {% endfor %}
                 </fieldset>
             {% endfor %}
-            <input type="submit" value="Submit">
+            </div>
+            <div class="d-flex flex-row-reverse">
+            <input class="btn btn-primary m-1" type="submit" value="Guardar y Terminar">
+            <button class="btn btn-info m-1" type="button" onClick="newQuestion()">Añadir Pregunta</button>
+            </div>
         </form>
         </div>
     </div>
 </main>
 
+{% endblock %}
+{% block scripts %}
+<script src="{% static 'quiz/javascript/creation-survey.js' %}" ></script>
 {% endblock %}

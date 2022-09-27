@@ -8,12 +8,23 @@ class ChoiceForm(forms.ModelForm):
         model = Choice
         fields = ['choice_text']
         labels = { 'choice_text': ''}
+        widgets = {
+                'choice_text': TextInput(attrs= {
+                    'placeholder': 'Ingrese una opción',
+                })
+        }
 
 class QuestionForm(forms.ModelForm):
     class Meta:
         model = Question
         fields = ['question_text']
         labels = { 'question_text': 'Pregunta' }
+
+        widgets = {
+                'question_text': TextInput(attrs= {
+                    'placeholder': 'Ingrese una pregunta',
+                })
+        }
 
     def __init__(self, *args, **kwargs):
         self.index = kwargs.pop('n_choices',4)
@@ -55,6 +66,6 @@ QuestionFormSet =  modelformset_factory(
         Question,
         form=QuestionForm, 
         formset=QuestionFormset,
-        extra=3,)
+        extra=5,)
 
 
