@@ -6,7 +6,9 @@ from .views import (
         StartView,
         QuestionView,
         EndView,
-        ResultsView
+        ResultsView,
+        ListSurveysView,
+        SurveyDetailsView,
         )
 
 urlpatterns = [
@@ -16,4 +18,8 @@ urlpatterns = [
         path('quiz/finish', EndView.as_view(), name='end'),
         path('quiz/results', ResultsView.as_view(), name='results'),
         path('create-survey', CreateSurveyView.as_view(), name='create'),
+        path('surveys/list', ListSurveysView.as_view(), name='surveys'),
+        path('surveys/list/<str:topic>/<int:id>', 
+            SurveyDetailsView.as_view(), 
+            name='survey-detail'),
 ]

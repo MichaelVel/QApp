@@ -1,0 +1,19 @@
+{% extends 'quiz/head.html' %}
+{% load static %}
+
+{% block view_stylesheet %} {% static 'quiz/css/index.css' %} {% endblock %}
+{% block content %}
+
+{% include 'quiz/header.html' %}
+<main class="container vh-100 bg-transparent "> 
+    <div class="row h-100 align-items-center p-2">
+        <div class="container col-sm-11 col-lg-6 main-container py-4">
+            {% if user.is_superuser %}
+                {% include 'quiz/survey_list_suser.html' %}
+            {% else %} 
+                {% include 'quiz/survey_list_user.html' %}
+            {% endif %}
+        </div>
+    </div>
+</main>
+{% endblock %}

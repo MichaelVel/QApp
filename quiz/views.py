@@ -5,8 +5,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.core.serializers import serialize, deserialize
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render, redirect
-from django.views import View
-from django.views.generic.base import ContextMixin, RedirectView, TemplateView
+from django.views.generic import DetailView, ListView, View, RedirectView, TemplateView
+from django.views.generic.base import ContextMixin
 
 from .forms import QuestionFormSet, SurveyForm
 from .models import Choice, GameSession, Question, Answer, Survey
@@ -94,8 +94,20 @@ class CreateSurveyView(TemplateView):
         form_data = self.process_request(request)
         form_data = Survey.from_form(form_data)
         form_data = Question.from_form(form_data)
-        form_data = Choice.from_form(form_data)
+        Choice.from_form(form_data)
+
         return redirect('index')
+
+class ListSurveysView(ListView):
+    model = Survey
+    
+    def get_queryset(self, *args, **kwargs):
+        qs = super().get_queryset(*args,**kwargs)
+        logging.debug(dir(qs[0]))
+        return qs
+
+class SurveyDetailsView(DetailView):
+    pass
 
 class StartView(LoginRequiredMixin, RedirectView):
     """ 

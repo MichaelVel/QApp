@@ -1,0 +1,17 @@
+<div class="container">
+    <ul>
+        <li class="row">
+            <p class="col-7">Nombre</a>
+            <p class="col-4">Estado</p>
+        </li>
+    {% for object in object_list %}
+        <li class="row">
+            <a class="col-7">{{ object.name}}</a>
+            <p class="col-4">{{ object.get_status_display}}</p>
+        </li>
+        <hr/>
+        {% empty %}
+            <li>No objects yet.</li>
+    {% endfor %}
+        </ul>
+</div>
