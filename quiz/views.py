@@ -129,8 +129,6 @@ class SurveyDetailsView(DetailView):
     def get_context_data(self, **kwargs):
         context = super(SurveyDetailsView, self).get_context_data(**kwargs)
         form = SurveyForm(initial={'name': ''})
-        logging.debug(dir(form))
-        logging.debug(form.fields)
         context['survey'] = form
         return context
     
