@@ -19,7 +19,7 @@ urlpatterns = [
         path('quiz/results', ResultsView.as_view(), name='results'),
         path('create-survey', CreateSurveyView.as_view(), name='create'),
         path('surveys/list', ListSurveysView.as_view(), name='surveys'),
-        path('surveys/list/<str:topic>/<int:id>', 
+        path('surveys/list/<str:topic>/<int:pk>', 
             SurveyDetailsView.as_view(), 
             name='survey-detail'),
 ]

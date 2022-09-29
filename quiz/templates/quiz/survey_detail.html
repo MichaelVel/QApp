@@ -1,0 +1,59 @@
+{% extends 'quiz/head.html' %}
+{% load static %}
+
+{% block view_stylesheet %} {% static 'quiz/css/surveys.css' %} {% endblock %}
+{% block content %}
+
+{% include 'quiz/header.html' %}
+<main class="container min-vh-100 bg-transparent "> 
+    <div class="row min-vh-100 align-items-center p-2">
+        <div class="container col-sm-11 col-lg-6 main-container py-4">
+            <h1 class="h1-title">{{object.name|upper}}</h1>
+            <hr>
+            <section class="container">
+                <h2 class="h2-title">INFORMACIÓN GENERAL</h2>
+                {% if user.is_superuser %}
+                <form class="d-flex p-1" action="{{object.id}}" method="post">
+                    {% csrf_token %}
+                    <div class="select-topic">{{ survey.status }}</div>
+                    <button class="btn btn-info col-2 p-0">CAMBIAR</button>
+                </form>
+                {% endif %}
+                <p class="info-p">
+                <span>ESTADO:</span>&nbsp;&nbsp;{{object.get_status_display}}
+                </p>
+                <p class="info-p">
+                <span>TEMA:</span>&nbsp;&nbsp;{{object.get_topic_display}}
+                </p>
+                <p class="info-p">
+                <span>FECHA CREACIÓN:</span>&nbsp;&nbsp;{{object.creation_date}}
+                </p>
+            </section>
+            <hr>
+            <section class="container">
+                <h2 class="h2-title">PREGUNTAS</h2>
+                {% for question in object.question_set.all %}
+                    <div class="question-container">
+                        <p class="question-text">{{question.question_text|upper}}</h3>
+                    <ul class="choices-container">
+                        {% for choice in question.choice_set.all %}
+                            {% if choice.is_correct %}
+                                <li class="ch-correct">{{choice.choice_text}}</li>
+                            {% else %}
+                                <li class="ch-incorrect">{{choice.choice_text}}</li>
+                            {% endif %}
+                        {% endfor %}
+                        </ul>
+                    </div>
+                {% endfor %}
+            </section>
+            <hr>
+            <div class="d-flex flex-row-reverse p-1">
+                <button class="btn btn-primary" onclick="location.href='/surveys/list'">
+                    Regresar
+                </button>
+            </div>
+        </div>
+    </div>
+</main>
+{% endblock %}

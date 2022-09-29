@@ -113,11 +113,37 @@ class ListSurveysView(ListView):
     
     def get_queryset(self, *args, **kwargs):
         qs = super().get_queryset(*args,**kwargs)
-        logging.debug(self.request.resolver_match.view_name)
+        user =self.request.user
+
+        if not user.is_superuser:
+            qs = qs.filter(user=user)
+
+        if self.request.GET:
+            qs = qs.filter(topic=self.request.GET['topic'])
+
         return qs.order_by('-creation_date')[:10]
 
 class SurveyDetailsView(DetailView):
-    pass
+    model = Survey
+
+    def get_context_data(self, **kwargs):
+        context = super(SurveyDetailsView, self).get_context_data(**kwargs)
+        form = SurveyForm(initial={'name': ''})
+        logging.debug(dir(form))
+        logging.debug(form.fields)
+        context['survey'] = form
+        return context
+    
+    def post(self, request, *args, **kwargs):
+        qs = self.get_queryset()
+        survey = self.get_object(qs)
+        status = request.POST['status']
+
+        survey.status = status
+        survey.save()
+
+        return self.get(request, *args, *kwargs)
+
 
 class StartView(LoginRequiredMixin, RedirectView):
     """ 

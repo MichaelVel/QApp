@@ -43,7 +43,7 @@ class QuestionForm(forms.ModelForm):
 class SurveyForm(forms.ModelForm):
     class Meta:
         model = Survey
-        fields = ['topic', 'name']
+        fields = ['topic', 'name', 'status']
         labels = {
                 'topic': 'Escoge un tema',
                 'name': 'Titulo',

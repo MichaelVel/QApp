@@ -5,8 +5,8 @@
 {% block content %}
 
 {% include 'quiz/header.html' %}
-<main class="container vh-100 bg-transparent "> 
-    <div class="row h-100 align-items-center p-2">
+<main class="container min-vh-100 bg-transparent "> 
+    <div class="row  align-items-center p-2">
         <div class="container col-sm-11 col-lg-6 main-container py-4">
             {% if user.is_superuser %}
                 {% include 'quiz/survey_list_suser.html' %}
