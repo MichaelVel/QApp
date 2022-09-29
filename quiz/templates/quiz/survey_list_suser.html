@@ -1,19 +1,39 @@
 <div class="container">
-    <ul>
-        <li class="row">
-            <p class="col-5">Nombre</a>
-            <p class="col-2">Usuario</p>
-            <p class="col-4">Estado</p>
-        </li>
-    {% for object in object_list %}
-        <li class="row">
-            <a class="col-5">{{ object.name}}</a>
-            <p class="col-2">{{ object.user}}</p>
-            <p class="col-4">{{ object.get_status_display}}</p>
-        </li>
-        <hr/>
-        {% empty %}
-            <li>No objects yet.</li>
-    {% endfor %}
-        </ul>
+    <h1 class="h1-title">Lista de Quizes</h1>
+    <hr>
+    <div class="container p-1">
+        <h2 class="h2-title">Seleccionar tema</h2>
+        <form class="d-flex p-1" action="surveys/list" method="get">
+            <div class="select-topic">{{ survey.topic}}</div>
+            <button class="btn btn-info col-2 p-0">FILTRAR</button>
+        </form>
+    </div>
+    <hr>
+    <div class="container m-1 p-1">
+        <h2 class="h2-title">Ultimas encuestas añadidas</h2>
+        <table class="table table-striped score-table">
+            <thead>
+                <tr class="t-header">
+                    <th class="t-header-col" scope="col">Nombre</th>
+                    <th class="t-header-col" scope="col">Usuario</th>
+                    <th class="t-header-col" scope="col">Estado</th>
+                </tr>
+            </thead>
+            <tbody>
+            {% for object in object_list %}
+                <tr class="t-row">
+                    <td><a href="#">{{ object.name}}</a></td>
+                    <td>{{ object.user}}</td>
+                    <td>{{ object.get_status_display}}</td>
+                </tr>
+            {% empty %}
+                <tr class="t-row">
+                    <td>No hay encuestas por el momento</td>
+                    <td>N/A</td>
+                    <td>N/A</td>
+                </tr>
+            {% endfor %}
+            <tbody>
+        </table>
+    </div>
 </div>

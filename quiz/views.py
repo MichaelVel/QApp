@@ -100,11 +100,21 @@ class CreateSurveyView(TemplateView):
 
 class ListSurveysView(ListView):
     model = Survey
+
+    def get_context_data(self, **kwargs):
+        context = super(ListSurveysView, self).get_context_data(**kwargs)
+        form = SurveyForm(initial={'name': ''})
+
+        if not self.request.user.is_superuser:
+            form.remove_test_option()
+
+        context['survey'] = form
+        return context
     
     def get_queryset(self, *args, **kwargs):
         qs = super().get_queryset(*args,**kwargs)
-        logging.debug(dir(qs[0]))
-        return qs
+        logging.debug(self.request.resolver_match.view_name)
+        return qs.order_by('-creation_date')[:10]
 
 class SurveyDetailsView(DetailView):
     pass

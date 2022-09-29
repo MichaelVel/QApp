@@ -1,52 +1,9 @@
 <header class="container d-flex flex-row-reverse bg-transparent p-3">
     <div class="">
         {% if not user.is_authenticated %}
-        <button type="button" id="user-button" class="btn btn-primary dropdown-toggle p-2" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
-            <i class="bi bi-person-circle"></i>
-            Iniciar Sesion
-        </button>
-        <form action="accounts/login/" method="post" class="dropdown-menu dropdown-menu-end p-4">
-
-            {% csrf_token %}
-            <div class="mb-3">
-            <label for="username" class="form-label">Usuario</label>
-            <input type="text" name="username" class="form-control" id="username" placeholder="Usuario">
-            </div>
-            <div class="mb-3">
-            <label for="password" class="form-label">Contraseña</label>
-            <input type="password" name="password" class="form-control" id="password" placeholder="Contraseña">
-            </div>
-            <div class="mb-3">
-                <div class="form-check">
-                    <input type="checkbox" class="form-check-input" id="rememberMe">
-                    <label class="form-check-label" for="rememberMe">
-                        Recordarme
-                    </label>
-                </div>
-            </div>
-            <button type="submit" class="btn btn-primary">Ingresar</button>
-            <p>¿No tienes cuenta? <a href="/register"> <br>Registrate</a></p>
-        </form>
+            {% include 'quiz/header_not_auth.html' %}
         {% else %}
-        <button type="button" class="btn btn-primary dropdown-toggle p-2" data-bs-toggle="dropdown" aria-expanded="false" data-bs-auto-close="outside">
-            <i class="bi bi-person-circle"></i>
-            {{ request.user.username }}
-        </button>
-        <div class="dropdown-menu">
-            {% if user.is_staff %}
-            <button class="btn dropdown-item" onclick="location.href='/admin/'">
-                Administración
-            </button>            
-            {% endif %}
-            <button class="btn dropdown-item" onclick="location.href='/create-survey'">
-                Crear Quiz
-            </button>            
-            <form action="/accounts/logout/" method="post" class="dropdown-item p-0">
-                {% csrf_token %}
-                <button type="submit" class="btn dropdown-item">Salir</button>
-            </form>
-        </div>
-
+            {% include 'quiz/header_auth.html' %}
         {% endif %}
     </div>
 </header>
