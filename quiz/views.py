@@ -2,6 +2,7 @@ import random, re, logging
 from typing import Any
 
 from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.views import LoginView
 from django.core.serializers import serialize, deserialize
 from django.core.exceptions import ObjectDoesNotExist
 from django.shortcuts import render, redirect
@@ -30,15 +31,21 @@ class IndexView(TemplateView):
         context['failed_load_game'] = False
         
         init_button_request = self.request.GET.get('next')
+        failed_login = self.request.GET.get('failed-login')
         failed_request = self.request.GET.get('failed')
 
-        if init_button_request == '/quiz/start':
+        if init_button_request == '/quiz/start' or failed_login == '1':
             context['pop_up_login'] = True
 
         if failed_request:
             context['failed_load_game'] = True
 
         return context
+
+class QLoginView(LoginView):
+    """ Custom login view to change the default behaviour of failed login """ 
+    def form_invalid(self, form):
+        return redirect('/?failed-login=1')
 
 class CreateSurveyView(TemplateView):
     """ Simple Page to create thematic surveys. """
