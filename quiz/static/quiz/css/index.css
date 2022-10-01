@@ -34,3 +34,8 @@
     font-size: 3em;
     color: rgb(var(--dark-accent));
 }
+
+.failed-text {
+    color: red;
+    text-align: center;
+    font-size: 1em;

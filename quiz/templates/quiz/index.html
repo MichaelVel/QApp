@@ -15,16 +15,14 @@
         <div class="container">
             <form action="quiz/start" method="post" class="row justify-content-center">
             {% csrf_token %}
-                <div class="col-6 bg-warning">
+                <div class="col-6">
                     <div class="row justify-content-center">
                 {{ survey.topic}}
                     </div>
                     {% if failed_load_game %}
-                    <!-- 
-                        TODO: Create Failed Message 
-                        It must says if currently there are no test of a 
-                        given topic.
-                    -->
+                    <p class="failed-text">
+                        Lo sentimos, en el momento no hay quices del tema disponibles.
+                    </p>
                     {% endif %}
                 </div>
                 <div class="col-12"></div>
