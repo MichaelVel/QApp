@@ -1,0 +1,62 @@
+:root {
+    --light-shades: 235, 237, 235;
+    --light-accent:  42, 198, 208;
+    --main-color:    83, 160, 231;
+    --dark-accent:  110, 132, 164;
+    --dark-shades:   26,  52,  96;
+}
+
+.bg-transparent {
+    background-color: rgba(0, 0, 0, 0);
+}
+
+.bg-lshades {
+    background-color: rgb(var(--light-shades));
+}
+
+.bg-laccent {
+    background-color: rgb(var(--light-accent));
+}
+
+.bg-main {
+    background-color: rgb(var(--main-color));
+}
+
+.bg-daccent {
+    background-color: rgb(var(--dark-accent));
+}
+
+.bg-dshades {
+    background-color: rgb(var(--dark-shades));
+}  
+
+.bg-image {
+    background-image: url('../img/lagunillas.jpeg');
+}
+
+.btn-primary {
+    background-color: rgb(var(--main-color));
+    border-color: rgb(var(--main-color));
+    color: rgb(var(--dark-shades));
+}
+
+.btn-primary:hover, .btn-primary:focus {
+    background-color: rgb(var(--dark-shades));
+    border-color: rgb(var(--dark-shades));
+    color: rgb(var(--light-shades));
+    box-shadow: none !important;
+}
+
+.btn-info {
+    background-color: rgb(var(--light-accent));
+    border-color: rgb(var(--light-accent));
+    color: rgb(var(--dark-shades));
+}
+
+.btn-info:hover, .btn-info:focus {
+    background-color: rgb(var(--dark-accent));
+    border-color: rgb(var(--dark-accent));
+    color: rgb(var(--dark-shades));
+    box-shadow: none !important;
+}
+

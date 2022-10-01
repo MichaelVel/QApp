@@ -1,3 +1,4 @@
+from django.middleware.csrf import logging
 from django.shortcuts import render, redirect
 from django.contrib.auth import login
 
@@ -14,6 +15,7 @@ def register(request):
     # if a GET (or any other method) we'll create a blank form
     else:
         form = NewUserForm()
-
+    
+    logging.debug(form.errors.as_data)
     return render(request, 'registerUsers/register.html', {'form': form})
 

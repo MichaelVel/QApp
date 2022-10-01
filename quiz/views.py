@@ -34,11 +34,16 @@ class IndexView(TemplateView):
         failed_login = self.request.GET.get('failed-login')
         failed_request = self.request.GET.get('failed')
 
-        if init_button_request == '/quiz/start' or failed_login == '1':
+        if init_button_request == '/quiz/start':
             context['pop_up_login'] = True
+            context['please_login'] = True
 
         if failed_request:
             context['failed_load_game'] = True
+
+        if failed_login == '1':
+            context['failed_login'] = True
+            context['pop_up_login'] = True
 
         return context
 

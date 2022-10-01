@@ -13,9 +13,11 @@
     <label for="password" class="form-label">Contraseña</label>
     <input type="password" name="password" class="form-control" id="password" placeholder="Contraseña">
     </div>
+    {% if failed_login %}
     <p class="failed-text">
         Usuario y/o contraseña incorrecta.
     </p>
+    {% endif %}
     <div class="mb-3">
         <div class="form-check">
             <input type="checkbox" class="form-check-input" id="rememberMe">

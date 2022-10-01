@@ -7,13 +7,13 @@ from django.forms import EmailInput, TextInput
 # Create your forms here.
 
 class NewUserForm(UserCreationForm):
-    password1 = forms.CharField(label="Password",
+    password1 = forms.CharField(label="Contraseña",
             strip=False,
             widget=forms.PasswordInput(attrs={
                 "class": "form-control",
                 "autocomplete": "new-password"}))
 
-    password2 = forms.CharField(label="Password Confirmation",
+    password2 = forms.CharField(label="Confirme Contraseña",
             strip=False,
             widget=forms.PasswordInput(attrs={
                 "class": "form-control",
@@ -22,6 +22,12 @@ class NewUserForm(UserCreationForm):
     class Meta:
         model = User
         fields = ["username", "email", "password1", "password2"]
+        labels = {
+                'username': 'Nombre de usuario',
+                'email': 'Correo Electrónico',
+                'password1': 'Contraseña',
+                'password2': 'Confirme Contraseña',
+                }
         widgets = { 
                 'username': TextInput(attrs={
                     'class': "form-control",

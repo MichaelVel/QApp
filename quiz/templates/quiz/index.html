@@ -24,6 +24,11 @@
                         Lo sentimos, en el momento no hay quices del tema disponibles.
                     </p>
                     {% endif %}
+                    {% if please_login %}
+                    <p class="failed-text">
+                        Por favor ingrese o regístrese al sistema.
+                    </p>
+                    {% endif %}
                 </div>
                 <div class="col-12"></div>
                 <button class="btn btn-primary  m-1 col-10 col-sm-4 ">INICIAR</button>
