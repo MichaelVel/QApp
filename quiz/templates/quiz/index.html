@@ -37,19 +37,80 @@
     </div>
     </div>
 </main>
+
 <!-- Modal -->
 <div class="modal fade main-modal" id="instructions" tabindex="-1" aria-labelledby="instrLabel" aria-hidden="true">
     <div class="modal-dialog">
         <div class="modal-content bg-lshades">
             <div class="modal-header">
-                <h5 class="modal-title" id="instrLabel">¿Como Jugar?</h5>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                <h3 class="modal-title m-title col-12" id="instrLabel">¡Bienvenido a Bioquiz!</h5>
             </div>
             <div class="modal-body">
-                ...
+                <div id="carouselInfo" class="carousel slide" data-bs-ride="carousel">
+                    <div class="carousel-inner">
+                        <div class="carousel-item active">
+                            <div class="d-flex justify-content-center">
+                                <div class="col-8"> 
+                                    <h4 class="h4-title">
+                                        ¿Que tanto sabes de los ecosistemas colombianos?
+                                    </h4>
+                                    <hr>
+                                    <p class="info-text"> 
+                                        Puedes escoger uno de los temas disponibles y 
+                                        poner a prueba tus conocimientos.
+                                    </p>
+                                    <hr>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="carousel-item">
+                            <div class="d-flex justify-content-center">
+                                <div class="col-8">
+                                    <h4 class="h4-title">
+                                        ¿Como jugar?
+                                    </h4>
+                                    <hr>
+                                    <p class="info-text"> 
+                                        Para jugar, tienes que crear una cuenta, es gratis. 
+                                        <br><br>
+                                        Escoge un tema, y responde las preguntas, 
+                                        ¡Tienes 15 segundos para cada una!
+                                    </p>
+                                    <hr>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="carousel-item">
+                            <div class="d-flex justify-content-center">
+                                <div class="col-8">
+                                    <h4 class="h4-title">
+                                        ¿Te interesa crear tus propios quices?
+                                    </h4>
+                                    <hr>
+                                    <p class="info-text"> 
+                                        Si tienes una idea, y te gustaria compartirla, 
+                                        puedes crear tus propios quices.
+                                        <br><br>
+                                        En el menu de tu perfil encontraras una opción
+                                        para crear y consultar tus quices.
+                                    </p>
+                                    <hr>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <button class="carousel-control-prev" type="button" data-bs-target="#carouselInfo" data-bs-slide="prev">
+                        <span><i class="bi bi-caret-left-fill info-icon" aria-hidden="true"></i></span>
+                        <span class="visually-hidden">Previous</span>
+                    </button>
+                    <button class="carousel-control-next" type="button" data-bs-target="#carouselInfo" data-bs-slide="next">
+                        <span><i class="bi bi-caret-right-fill info-icon" aria-hidden="true"></i></span>
+                        <span class="visually-hidden">Next</span>
+                    </button>
+                </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-success" data-bs-dismiss="modal">Entendido</button>
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Entendido</button>
             </div>
         </div>
     </div>
