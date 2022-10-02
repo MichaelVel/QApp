@@ -20,7 +20,7 @@ class QuestionAdmin(admin.ModelAdmin):
 
 class SurveyAdmin(admin.ModelAdmin):
     fieldsets = [
-            (None, {'fields': ['topic', 'status']}),
+            (None, {'fields': ['topic', 'status', 'name']}),
     ]
     inlines = [QuestionInLine,]
 

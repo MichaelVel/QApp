@@ -52,6 +52,7 @@ class Survey(models.Model):
         Survey object.
         """
         survey = Survey(topic = data_form['survey']['topic'],
+                name = data_form['survey']['name'],
                 creation_date = timezone.now(),
                 user = data_form['survey']['user']
                 )
@@ -60,7 +61,7 @@ class Survey(models.Model):
         return data_form
 
     def __str__(self):
-        return f"Survey of {self.user} in {self.topic}. STATUS: {self.status}"
+        return f"{self.name} STATUS: {self.status}"
 
 
 class Question(models.Model):

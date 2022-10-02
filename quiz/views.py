@@ -75,6 +75,7 @@ class CreateSurveyView(TemplateView):
         form_data = {
                 'survey' : {
                     'topic': request.POST['topic'],
+                    'name': request.POST['name'],
                     'user': request.user,
                 },
         }
@@ -108,7 +109,7 @@ class CreateSurveyView(TemplateView):
         form_data = Question.from_form(form_data)
         Choice.from_form(form_data)
 
-        return redirect('index')
+        return redirect('surveys')
 
 class ListSurveysView(ListView):
     model = Survey
@@ -203,7 +204,7 @@ class QuestionView(ContextMixin,View):
         questions = self.request.session.pop('questions')
         if not questions:
             return context
-        question_id = questions.pop()['id']
+        question_id = questions.pop(0)['id']
         self.request.session['questions'] = questions
         question = Question.objects.get(id=question_id)
         context['question'] = question
@@ -277,5 +278,6 @@ class ResultsView(TemplateView):
         game_session = GameSession.objects.get(pk=game_session_id)
         survey = game_session.survey
         context['score'] = game_session.score
+        context['survey'] = survey
         context['top5'] = GameSession.scores.top_n_scores(5,survey)
         return context

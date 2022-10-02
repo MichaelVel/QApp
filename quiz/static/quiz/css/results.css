@@ -8,6 +8,7 @@
 .score-text {
     color: rgb(var(--dark-shades));
     text-align: center;
+    text-transform: uppercase;
 }
 
 .score {
