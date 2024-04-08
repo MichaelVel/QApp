@@ -1,0 +1,20 @@
+[tool.poetry]
+name = "qapp"
+version = "0.1.0"
+description = ""
+authors = ["Sebastián Velandia"]
+readme = "README.md"
+
+[tool.poetry.dependencies]
+python = "^3.11"
+django = "^4.2.2"
+dj-database-url = "^2.0.0"
+whitenoise = "^6.4.0"
+
+[tool.poetry.group.test.dependencies]
+selenium = "^4.11.2"
+pytest = "^8.0.2"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
