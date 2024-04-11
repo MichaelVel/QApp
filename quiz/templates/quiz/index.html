@@ -10,14 +10,14 @@
     <div class="row h-100 align-items-center p-2">
     <div class="container col-sm-11 col-lg-6 main-container py-4">
         <div class="row justify-content-center p-3">
-            <object class="col col-sm-8 col-lg-8" data="{% static 'quiz/img/logo.svg'%}"></object>
+            <object class="col col-sm-8 col-lg-8" data="{% static 'quiz/img/logo.svg' %}"></object>
         </div>
         <div class="container">
             <form action="quiz/start" method="post" class="row justify-content-center">
             {% csrf_token %}
                 <div class="col-6">
                     <div class="row justify-content-center">
-                {{ survey.topic}}
+                {{ survey.topic }}
                     </div>
                     {% if failed_load_game %}
                     <p class="failed-text">
@@ -34,7 +34,7 @@
                 <button class="btn btn-primary  m-1 col-10 col-sm-4 ">INICIAR</button>
             </form>
             <div class="row justify-content-center">
-                <button class="btn btn-info m-1 col-10 col-sm-4" data-bs-toggle="modal" data-bs-target="#instructions">INSTRUCCIONES</button>
+                <button id="info-button" class="btn btn-info m-1 col-10 col-sm-4" data-bs-toggle="modal" data-bs-target="#instructions">INSTRUCCIONES</button>
             </div>
         </div> 
     </div>
@@ -49,9 +49,9 @@
                 <h3 class="modal-title m-title col-12" id="instrLabel">¡Bienvenido a Bioquiz!</h5>
             </div>
             <div class="modal-body">
-                <div id="carouselInfo" class="carousel slide" data-bs-ride="carousel">
+                <div id="carouselInfo" class="carousel slide" >
                     <div class="carousel-inner">
-                        <div class="carousel-item active">
+                        <div id="info-intro" class="carousel-item active">
                             <div class="d-flex justify-content-center">
                                 <div class="col-8"> 
                                     <h4 class="h4-title">
@@ -66,7 +66,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="carousel-item">
+                        <div id="info-how" class="carousel-item">
                             <div class="d-flex justify-content-center">
                                 <div class="col-8">
                                     <h4 class="h4-title">
@@ -83,7 +83,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div class="carousel-item">
+                        <div id="info-create" class="carousel-item">
                             <div class="d-flex justify-content-center">
                                 <div class="col-8">
                                     <h4 class="h4-title">
@@ -113,7 +113,7 @@
                 </div>
             </div>
             <div class="modal-footer">
-                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Entendido</button>
+                <button id="info-close" type="button" class="btn btn-primary" data-bs-dismiss="modal">Entendido</button>
             </div>
         </div>
     </div>
