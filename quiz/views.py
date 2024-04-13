@@ -1,11 +1,11 @@
 import random, re, logging
 from typing import Any
+from urllib.parse import urlencode
 
-from django.contrib.auth.mixins import LoginRequiredMixin
 from django.contrib.auth.views import LoginView
 from django.core.serializers import serialize, deserialize
 from django.core.exceptions import ObjectDoesNotExist
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, reverse
 from django.views.generic import DetailView, ListView, View, RedirectView, TemplateView
 from django.views.generic.base import ContextMixin
 
@@ -156,23 +156,18 @@ class SurveyDetailsView(DetailView):
         return self.get(request, *args, *kwargs)
 
 
-class StartView(LoginRequiredMixin, RedirectView):
+class StartView(RedirectView):
     """ 
     Check if exists quizzes of the topic chose by the user, then get a random
     quiz and load the game session, if not redirects to main page.  
     """
     pattern_name = 'question'
-    login_url = '/'
-    redirect_field_name = 'next'
 
     def get_random_survey_from_topic(self,topic):
         surveys = list(Survey.objects.filter(
                 topic=topic,
                 status=1))                              # Only accepted surveys
         return None if not surveys else random.choice(surveys)
-
-    def get_game_session(self, survey):
-        return GameSession.new_game_session(self.request.user, survey)
 
     def get_redirect_url(self, *args, **kwargs):
         topic = self.request.POST.get('topic')
@@ -181,49 +176,59 @@ class StartView(LoginRequiredMixin, RedirectView):
         if not survey:
             return "/?failed=1"
 
-        self.request.session['questions'] = list(survey.questions.values('id'))
-        self.request.session['answers'] = []
-        self.request.session['game_session'] = serialize(
-                'json', 
-                [self.get_game_session(survey)])
-
-        return super().get_redirect_url(*args,**kwargs)
+        return reverse(self.pattern_name, kwargs={"id":survey.id})
 
 class QuestionView(ContextMixin,View):
     """
     This view is the heart of the app, provides the quiz, and stores 
     into session data the answers of the users.
     """
-    def setup(self,request, *args,**kwargs):
+    def setup(self, request, *args,**kwargs):
         """ Create the context on initialization. """
         super().setup(request,*args,**kwargs)
-        self.context = self.get_context_data()
+        self.survey_id = kwargs.get('id')
+        self.context = self.get_context_data(**kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        questions = self.request.session.pop('questions')
-        if not questions:
-            return context
-        question_id = questions.pop(0)['id']
-        self.request.session['questions'] = questions
-        question = Question.objects.get(id=question_id)
-        context['question'] = question
+        context['ready'] = True
+        
+        if not self.request.GET.get('ready'):
+            survey = Survey.objects.get(pk=self.survey_id)
+            context['ready'] = False
+            questions = [q.id for q in survey.questions]
+            self.request.session['questions'] = questions
+
+        if (q :=self.request.GET.get('question')):
+            context['question'] = Question.objects.get(pk=q)
+        elif (qs := self.request.session['questions']):
+            question = qs.pop(0)
+            context['question'] = Question.objects.get(pk=question)
+            self.request.session['questions'] = qs
+
+        query_prms = {
+            'ready': 1,
+            'question': context['question'].id,
+        }
+
+        context['question_url'] = f"?{urlencode(query_prms)}"
         
         return context
 
-    def get(self,request, *args, **kwargs):
-        if not self.context.get('question'):
-            return redirect('end')
-        return render(request,'quiz/quiz.html',self.context)
+    def get(self, request, *args, **kwargs):
+        return render(request, 'quiz/quiz.html', self.context)
 
-    def post(self,request, *args, **kwargs):
-        answers = request.session.pop('answers')
-        answers.append((
-            request.POST.get('question_id'),
-            request.POST.get('choice'),
-            request.POST.get('timerVal')
-        ))
-        request.session['answers'] = answers
+    def post(self, request, *args, **kwargs):
+        if request.POST.get('ready'):
+            return self.get(request, *args, **kwargs)
+
+        # answers = request.session.pop('answers')
+        # answers.append((
+        #     request.POST.get('question_id'),
+        #     request.POST.get('choice'),
+        #     request.POST.get('timerVal')
+        # ))
+        # request.session['answers'] = answers
         return self.get(request)
 
 class EndView(RedirectView):

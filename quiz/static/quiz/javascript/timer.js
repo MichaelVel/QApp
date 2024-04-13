@@ -1,13 +1,15 @@
 const time = window.setInterval(changeTimer,1000);
 
-window.setTimeout(function myFunction() {
-  clearInterval(time);
-  document.getElementById("submit-btn").click();
-},16000);
-
 function changeTimer() {
-  let currSec = document.getElementById("timer").value;
-  document.getElementById("timer").value = currSec-1;
+  const timerElem = document.getElementById("timer");
+  let currSec = parseInt(timerElem.value);
+
+  if (currSec <= 0) {
+    clearInterval(time);
+    document.getElementById("submit-btn").click();
+  } else {
+    timerElem.value = currSec-1;
+  }
 }
 
 function submitVals() {

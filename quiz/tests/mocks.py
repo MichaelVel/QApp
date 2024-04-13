@@ -5,6 +5,30 @@ from quiz.models import Answer, GameSession, Question, Choice, Survey
 from django.utils import timezone
 from django.contrib.auth.models import User
 
+def create_mock_survey():
+    survey = Survey.objects.create(topic=Survey.SurveyTopics.PARAMO, 
+                    status=Survey.StateSurvey.ACCEPTED,
+                    creation_date=timezone.now(),
+                    user=MockFactory.test_user(1),
+                    name="PARAMO TEST QUIZ")
+
+    for i in range(5):
+        question = Question.objects.create(question_text=f"Question {i}", survey=survey)
+
+        Choice.objects.create(
+            choice_text=f"Correct Answer",
+            question=question,
+            is_correct=True)
+
+        Choice.objects.create(
+            choice_text=f"Incorrect Answer",
+            question=question,
+            is_correct=False,
+            explanation="This is a incorrect answer")
+
+    return survey
+
+
 class MockFactory:
     @staticmethod
     def get_correct_choice(question: Question) -> Choice:
@@ -24,6 +48,9 @@ class MockFactory:
 
     @staticmethod
     def test_gamesession(user: User, survey: Survey) -> GameSession:
+        if not user:
+            user = MockFactory.test_user(1)
+
         return GameSession.objects.create(
                 creation_date=timezone.now(),
                 user = user,

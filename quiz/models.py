@@ -77,7 +77,7 @@ class Question(models.Model):
         return self.choice_set.filter(is_correct=True)
 
     def __str__(self):
-       return self.question_text 
+       return f"{self.question_text}"
 
     @staticmethod
     def from_form(data_form) -> dict[str,Any]:
@@ -101,11 +101,12 @@ class Choice(models.Model):
     objects = models.Manager()
 
     question = models.ForeignKey(Question, on_delete=models.CASCADE)
-    choice_text = models.CharField(max_length=200)
+    choice_text = models.CharField(max_length=20)
+    explanation = models.CharField(max_length=200, blank=True)
     is_correct = models.BooleanField("choice is correct?")
 
     def __str__(self):
-        return self.choice_text
+        return f"{self.choice_text}"
 
     @staticmethod
     def from_form(data_form) -> dict[str, Any]:
