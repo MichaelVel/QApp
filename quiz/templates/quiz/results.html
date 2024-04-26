@@ -35,11 +35,11 @@
                             </tr>
                         </thead>
                         <tbody>
-                            {% for user,score in top5 %} 
+                            {% for answer in top5 %} 
                             <tr class="t-row">
                                 <th class="t-row-h" scope="row">{{ forloop.counter }}</th>
-                                <td class="t-cell"> {{ user.username }}</td>
-                                <td> {{ score }}</td>
+                                <td class="t-cell"> {{ answer.user.username }}</td>
+                                <td> {{ answer.score }}</td>
                             </tr>
                             {% endfor %}
                         </tbody>

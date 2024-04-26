@@ -150,82 +150,17 @@ class Choice(models.Model):
 
         return data_form
 
-class GamesSessionManagerScores(models.Manager):
-    def top_n_scores(self, n: int, survey: Survey):
-        """ Return the top n results of the given survey """
-        sessions = self.filter(survey=survey)
-        scores = []
-        for session in sessions:
-            scores.append((session.user,session.score))
-        scores = sorted(scores, key= lambda x: x[1], reverse=True)
-        return scores[:n]            
-
-class GameSession(models.Model):
-    objects = models.Manager()
-    scores = GamesSessionManagerScores()
-
-    creation_date = models.DateTimeField('date of creation')
-    survey = models.ForeignKey(Survey, on_delete=models.CASCADE)
-    user = models.ForeignKey(User, on_delete=models.CASCADE)
-
-    @property
-    def score(self):
-        """ derived attribute of the GameSession Model """
-        score = self.answer_set.exclude(choice__is_correct=False)
-        score = score.aggregate(score=Sum('interval_time'))
-        score = score['score']
-        return 0 if score is None else score
-
-    @staticmethod
-    def new_game_session(user,survey) -> 'GameSession':
-        return GameSession(user=user,survey=survey, creation_date = timezone.now())
-
-
-## All what did this custom manager is now managed by the SessionGame Model. 
-# class AnswerSessionManager(models.Manager):
-    # def get_last_session(self, user_id: int) -> int:
-        # ls: int= self.filter(user=user_id).aggregate(models.Max('session'))['session__max']
-        # return 0 if not ls else ls
-
-    # def score(self, user_id: int, session_id: int) -> int:
-        # score: QuerySet = self.filter(user__id=user_id, session=session_id)
-        # score = score.exclude(choice__is_correct=False)
-        # score = score.aggregate(score=Sum('time'))
-
-        # if score['score'] is None:
-            # return 0
-
-        # return score['score']
-
-    # def top5_scores(self):
-        # scores: QuerySet = self.exclude(choice__is_correct=False)
-        # scores = scores.values('user__username','session')
-        # scores = scores.annotate(score=Sum('time'))
-        # scores = scores.order_by('-score')[:5]
-        # return scores
-
 class Answer(models.Model):
     objects = models.Manager()
-    #sessions = AnswerSessionManager()
 
-    session = models.ForeignKey(GameSession, on_delete=models.CASCADE)
-    question = models.ForeignKey(Question, on_delete=models.CASCADE)
-    choice = models.ForeignKey(
-            Choice,
-            on_delete=models.CASCADE,
-            default=None,
-            blank=True,
-            null=True)
-    interval_time = models.IntegerField(default=0)
+    survey = models.ForeignKey(Survey, on_delete=models.CASCADE, blank=True, null=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE, blank=True, null=True)
+    creation_date = models.DateTimeField(auto_now_add=True)
+    score = models.IntegerField(default=0)
 
     @staticmethod
-    def new_answer(session, question, choice, interval_time) -> 'Answer':
-        return Answer(
-                session=session,
-                question=question,
-                choice=choice,
-                interval_time=interval_time)
-
+    def top_n_answers(n: int, survey: Survey):
+        return Answer.objects.filter(survey=survey).order_by('-score')[:n]
 
 
 

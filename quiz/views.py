@@ -258,25 +258,31 @@ class QuestionView(ContextMixin,View):
 
         request.session['answers'] = answers
 
-class ResultsView(TemplateView):
         next_question = self.context['survey'].next_question(self.question_id)
         if next_question is None:
             return self.quiz_ended()
 
         return redirect('question', s_id = self.survey_id, q_id = next_question.id)
 
+class ResultsView(ContextMixin, View):
     """ 
     Display the results of the quiz and a ranking of the top scores for 
     the given quiz.
     """
-    template_name = "quiz/results.html"
+    def setup(self, request, *args,**kwargs):
+        """ Create the context on initialization. """
+        super().setup(request,*args,**kwargs)
+        self.survey_id = kwargs.get('id')
+        self.context = self.get_context_data(**kwargs)
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        game_session_id = self.request.session.get("game_session")
-        game_session = GameSession.objects.get(pk=game_session_id)
-        survey = game_session.survey
-        context['score'] = game_session.score
-        context['survey'] = survey
-        context['top5'] = GameSession.scores.top_n_scores(5,survey)
+        context['score'] = self.request.session.pop('score', None)
+        context['survey'] = get_object_or_404(Survey, pk=self.survey_id)
+        context['top5'] = Answer.top_n_answers(5, context['survey'])
         return context
+
+    def get(self, request, *args, **kwargs):
+        if self.context.get('score') is None:
+            return redirect('index')
+        return render(request, 'quiz/results.html', self.context)
