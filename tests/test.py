@@ -76,17 +76,37 @@ class NewVisitorTest(StaticLiveServerTestCase, TestCase):
         url = self.browser.current_url
         self.assertRegex(url, "quiz/.+/play", msg="Button not redirect correctly")
 
-        time.sleep(20)
+        button = self.browser.find_element(By.CSS_SELECTOR, 'label[for="hack"]')
+        button.click()
 
         url = self.browser.current_url
         self.assertURLEqual(url, f"{self.live_server_url}/quiz/1/play?ready=1&question=1")
+
 
     # Once the 5 seconds of wait are done, the page reloads and she sees a
     # question. It's a simple question with two options, she choose a answer
     # and got a correct answer, she knows it for a green check that appears
     # bellow the options, after five seconds, the page change again an she is
     # in another question.
-    #def test_correct_answer(self):
+    def test_correct_answer(self):
+        self.browser.get(self.live_server_url)
+
+        select_elem = self.browser.find_element(By.NAME, "topic")
+        select = Select(select_elem)
+        select.select_by_value("PAR")
+
+        button = self.browser.find_element(By.ID, 'start-button')
+        button.click()
+
+        button = self.browser.find_element(By.CSS_SELECTOR, 'label[for="hack"]')
+        button.click()
+
+        button = self.browser.find_element(By.CSS_SELECTOR, 'label[for="choice1"]')
+        button.click()
+
+        feedback = self.browser.find_element(By.ID, 'feedback')
+        self.assertEqual("Correct!", feedback.text)
+
     #   pass
 
     # In this one, she choose a wrong answer, and bellow the options appears a 

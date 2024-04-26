@@ -44,7 +44,21 @@ class Survey(models.Model):
     
     @property
     def questions(self) -> list['Question']:
-        return self.question_set.all()
+        return [q for q in self.question_set.all().order_by('id')]
+
+    def next_question(self, q_id: int | None = None) -> 'Question | None':
+        questions = self.questions
+        if q_id is None:
+            return questions[0]
+
+        q_indexes = [q.id for q in questions]
+        idx = q_indexes.index(q_id)
+
+        if idx+1 >= len(q_indexes):
+            return None
+
+        return questions[idx+1]
+
     
     @staticmethod
     def from_form(data_form) -> dict[str,Any]:
@@ -74,7 +88,13 @@ class Question(models.Model):
     @property
     def correct_answer(self):
         """ derived attribute of the Question Model """
-        return self.choice_set.filter(is_correct=True)
+        return self.choice_set.filter(is_correct=True).first()
+
+    def score(self, choice_pk: int, timer: int):
+        correct_answer = self.correct_answer
+        if correct_answer is None or correct_answer.pk == choice_pk:
+            return timer
+        return 0
 
     def __str__(self):
        return f"{self.question_text}"

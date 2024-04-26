@@ -5,11 +5,19 @@ from quiz.models import Answer, GameSession, Question, Choice, Survey
 from django.utils import timezone
 from django.contrib.auth.models import User
 
-def create_mock_survey():
-    survey = Survey.objects.create(topic=Survey.SurveyTopics.PARAMO, 
+def create_mock_survey(topic: str | None = None):
+    if topic is None:
+        topic = Survey.SurveyTopics.PARAMO
+
+    user = User.objects.filter(username="userTestCase1").first()
+
+    if not user:
+        user = MockFactory.test_user(1)
+    
+    survey = Survey.objects.create(topic=topic, 
                     status=Survey.StateSurvey.ACCEPTED,
                     creation_date=timezone.now(),
-                    user=MockFactory.test_user(1),
+                    user=user,
                     name="PARAMO TEST QUIZ")
 
     for i in range(5):
@@ -79,6 +87,7 @@ class MockFactory:
             'survey': {
                 'topic': 'TST',
                 'user': user,
+                'name': 'TST',
             },
         }
         for i in range(n_answers):

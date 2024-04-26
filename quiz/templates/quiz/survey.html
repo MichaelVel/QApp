@@ -1,0 +1,25 @@
+{% extends 'quiz/head.html' %}
+{% load static %}
+
+{% block view_stylesheet %} {% static 'quiz/css/quiz.css' %} {% endblock %}
+
+{% block content %}
+{% include 'quiz/header.html' %}
+
+<main class="container">
+    <div class="row justify-content-center align-items-center bg-transparent vh-100">
+        <form class="main-container col-12 col-sm-10 col-lg-7" action="{{ question_url }}" method="get">
+            <div class="d-flex flex-column align-items-center p-3">
+                <label class="label-timer col-8" for="timer">LA PRUEBA INICIARA PRONTO</label>
+                <input class="col-4 col-sm-3 col-lg-2" type="text" id="timer" value="5" readonly>
+                <div class="d-flex flex-column form-group p-3 align-items-stretch">
+                    <input type="radio" class="btn-check p-3" id="hack" onclick="submitVals()">
+                    <label class="btn btn-primary p-3 mb-1" for="hack">¡Todo Listo!</label><br>
+                </div>
+            </div>
+            <div hidden><input type="submit" value="Vote" id="submit-btn"></div>
+        </form>
+    </div>
+</main>
+<script src="{% static 'quiz/javascript/timer.js' %}" ></script>
+{% endblock %}

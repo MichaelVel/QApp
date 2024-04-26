@@ -8,13 +8,12 @@
 
 <main class="container">
     <div class="row justify-content-center align-items-center bg-transparent vh-100">
-        <form class="main-container col-12 col-sm-10 col-lg-7" action="{% url 'question' id=question.survey.id %}{{ question_url }}" method="post">
+        <form class="main-container col-12 col-sm-10 col-lg-7" action="{{ request.path }}" method="post">
         {% csrf_token %}
         <div class="d-flex flex-column align-items-center p-3">
                 
-        <label class="label-timer col-8" for="timer">{% if ready %} TIEMPO RESTANTE {% else %}LA PRUEBA INICIARA PRONTO{% endif %}</label>
-                <input class="col-4 col-sm-3 col-lg-2" type="text" id="timer" name="timerVal" value={% if ready %} "15" {% else %} "5" {% endif %} readonly>
-        {% if ready %}
+        <label class="label-timer col-8" for="timer">TIEMPO RESTANTE</label>
+                <input class="col-4 col-sm-3 col-lg-2" type="text" id="timer" name="timerVal" value="15" readonly>
         </div>
         <fieldset class="d-flex flex-column form-group p-3 align-items-stretch">
             <legend class="question-text"><h1>{{ question.question_text }}</h1></legend>
@@ -29,16 +28,6 @@
         </div>
             
         <div hidden><input type="submit" value="Vote" id="submit-btn"></div>
-        {% else %}
-            <div class="d-flex flex-column form-group p-3 align-items-stretch">
-                <input type="radio" class="btn-check p-3" name="hack" id="hack" value="hack" onclick="submitVals()">
-                <label class="btn btn-primary p-3 mb-1" for="hack">¡Todo Listo!</label><br>
-            </div>
-            <div hidden>
-                <input type="number" readonly name="ready" value="1">
-            </div>
-            <div hidden><input type="submit" value="Vote" id="submit-btn"></div>
-        {% endif %}
         </form>
     </div>
 </main>

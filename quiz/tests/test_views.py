@@ -1,9 +1,10 @@
 from django.test import Client, RequestFactory, TestCase
+from django.urls import reverse
 
 from quiz.views import CreateSurveyView, EndView, QuestionView, StartView
 from quiz.models import Survey, Question, Choice
 
-from .mocks import MockFactory, MockRequest
+from .mocks import MockFactory, MockRequest, create_mock_survey
 
 class TestIndexView(TestCase):
     @classmethod
@@ -79,58 +80,58 @@ class TestStartView(TestCase):
         # Populate database
         cls.surveys = []
         for _ in range(5):
-            data = MockFactory.test_data(cls.user,3)
-            data = Survey.from_form(data)
-            data = Question.from_form(data)
-            data = Choice.from_form(data)
-            cls.surveys.append(data['survey'])
+            survey = create_mock_survey()
+            cls.surveys.append(survey)
 
         # Only 3 surveys accepted by the admin
-        for survey in cls.surveys[:3]:
-            survey.status = Survey.StateSurvey.ACCEPTED
+        for survey in cls.surveys[:2]:
+            survey.status = Survey.StateSurvey.REVIEW
             survey.save()
 
 
-    def test_user_not_logged_in(self):
-        """ The user must not have access to the quiz view """
-        response = self.client.post('/quiz/start')
-        self.assertRedirects(response, '/?next=%2Fquiz%2Fstart')
-
     def test_only_accepted_surveys_selected(self):
-        survey = self.view.get_random_survey_from_topic('TST')
+        survey = self.view.get_random_survey_from_topic('PAR')
         self.assertIsNotNone(survey)
-        self.assertEqual(survey.status, Survey.StateSurvey.ACCEPTED)
+
+        if survey:
+            self.assertEqual(survey.status, Survey.StateSurvey.ACCEPTED)
 
     def test_redirects_to_main_page_when_no_surveys_of_topic(self):
         Survey.objects.all().delete()
-        survey = self.view.get_random_survey_from_topic('TST')
+        survey = self.view.get_random_survey_from_topic('PAR')
         self.assertIsNone(survey)
         
-        self.client.login(username='userTestCase1',password='pass')
-        response = self.client.post('/quiz/start',{'topic':'TST'})
+        response = self.client.post('/quiz/start',{'topic':'PAR'})
         self.assertRedirects(response, '/?failed=1')
-
 
 class TestQuestionView(TestCase):
     @classmethod
     def setUpTestData(cls):
+        cls.client = Client()
         cls.view = QuestionView()
-        
-        # populate database with mock survey
-        cls.user = MockFactory.test_superuser()
-        cls.data = MockFactory.test_data(cls.user,3)
-        cls.data = Survey.from_form(cls.data)
-        cls.data = Question.from_form(cls.data)
-    
+        cls.survey = create_mock_survey()
+
+    def test_game_starts(self):
+        self.client.post('/quiz/start', {'topic':'PAR'})
+        self.client.post('/quiz/start')
+        response = self.client.get('/quiz/1/play')
+        self.assertContains(response, '/quiz/1/play?ready=1&amp;question=1')
+
+    def test_game_loops_correctly(self):
+        self.client.post('/quiz/start', {'topic':'PAR'})
+        self.client.get('/quiz/1/play')
+        for i in range(1,5):
+            response = self.client.post(f'/quiz/1/play?ready=1&amp;question={i}')
+            self.assertContains(response, f'/quiz/1/play?ready=1&amp;question={i+1}')
+
     def test_game_ended(self):
-        """ If the flag 'game_ended' is set, the view redirects to index """ 
-        request = RequestFactory().post('/quiz')
-        request.session = {'questions': None, 'answers': []}
-        response = QuestionView.as_view()(request)
-
-        # It's not necessary to render the redirected url
-        self.assertRedirects(response, '/quiz/finish',fetch_redirect_response=False)
-
+        self.client.post('/quiz/start', {'topic':'PAR'})
+        self.client.get('/quiz/1/play', {'first': 1})
+        for i in range(1,5):
+            data = {'id':i}
+            response = self.client.post(f'/quiz/1/play?ready=1&amp;question={i}', data)
+        response = self.client.post(f'/quiz/1/play?ready=1&amp;question=5', {'id':5})
+        self.assertContains(response, '/quiz/1/finish')
 
 class TestEndView(TestCase):
      def test_not_answers_in_session_cache(self):

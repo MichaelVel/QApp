@@ -5,12 +5,12 @@ from urllib.parse import urlencode
 from django.contrib.auth.views import LoginView
 from django.core.serializers import serialize, deserialize
 from django.core.exceptions import ObjectDoesNotExist
-from django.shortcuts import render, redirect, reverse
+from django.shortcuts import get_object_or_404, render, redirect, reverse
 from django.views.generic import DetailView, ListView, View, RedirectView, TemplateView
 from django.views.generic.base import ContextMixin
 
 from .forms import QuestionFormSet, SurveyForm
-from .models import Choice, GameSession, Question, Answer, Survey
+from .models import Choice, Question, Answer, Survey
 
 class IndexView(TemplateView):
     """ 
@@ -161,13 +161,16 @@ class StartView(RedirectView):
     Check if exists quizzes of the topic chose by the user, then get a random
     quiz and load the game session, if not redirects to main page.  
     """
-    pattern_name = 'question'
+    pattern_name = 'survey'
 
     def get_random_survey_from_topic(self,topic):
         surveys = list(Survey.objects.filter(
                 topic=topic,
                 status=1))                              # Only accepted surveys
         return None if not surveys else random.choice(surveys)
+
+    def questions_id(self, survey):
+        return [q.id for q in survey.questions]
 
     def get_redirect_url(self, *args, **kwargs):
         topic = self.request.POST.get('topic')
@@ -176,12 +179,14 @@ class StartView(RedirectView):
         if not survey:
             return "/?failed=1"
 
+        self.request.session['answers'] = {}
+
         return reverse(self.pattern_name, kwargs={"id":survey.id})
 
-class QuestionView(ContextMixin,View):
+class SurveyView(ContextMixin, View):
     """
-    This view is the heart of the app, provides the quiz, and stores 
-    into session data the answers of the users.
+    This View display the get ready message with a timer, in the future it
+    could have information about the survey if needed. 
     """
     def setup(self, request, *args,**kwargs):
         """ Create the context on initialization. """
@@ -191,86 +196,75 @@ class QuestionView(ContextMixin,View):
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
-        context['ready'] = True
-        
-        if not self.request.GET.get('ready'):
-            survey = Survey.objects.get(pk=self.survey_id)
-            context['ready'] = False
-            questions = [q.id for q in survey.questions]
-            self.request.session['questions'] = questions
+        survey = get_object_or_404(Survey, pk=self.survey_id)
+        next_question = survey.next_question()
+        context['question_url'] = f"{self.survey_id}/questions/{next_question.id}" 
+        return context
 
-        if (q :=self.request.GET.get('question')):
-            context['question'] = Question.objects.get(pk=q)
-        elif (qs := self.request.session['questions']):
-            question = qs.pop(0)
-            context['question'] = Question.objects.get(pk=question)
-            self.request.session['questions'] = qs
+    def get(self, request, *args, **kwargs):
+        return render(request, 'quiz/survey.html', self.context)
 
-        query_prms = {
-            'ready': 1,
-            'question': context['question'].id,
-        }
 
-        context['question_url'] = f"?{urlencode(query_prms)}"
+class QuestionView(ContextMixin,View):
+    """
+    This view is the heart of the app, provides the quiz, and stores 
+    into session data the answers of the users.
+    """
+    def setup(self, request, *args,**kwargs):
+        """ Create the context on initialization. """
+        super().setup(request,*args,**kwargs)
+        self.survey_id = kwargs.get('s_id')
+        self.question_id = kwargs.get('q_id')
+        self.context = self.get_context_data(**kwargs)
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+
+        survey = get_object_or_404(Survey, pk = self.survey_id)
+        question = get_object_or_404(Question, pk=self.question_id)
+
+        context['question'] = question
+        context['survey'] = survey
         
         return context
+
+    def quiz_ended(self):
+        answers = self.request.session.pop('answers', None)
+        user = self.request.user
+
+        if answers is None:
+            return redirect('index')
+        
+        score = sum(n for n in answers.values())
+        if user.is_authenticated:
+            Answer.objects.create(
+                user=user, survey=self.context['survey'], score=score)
+
+        self.request.session['score'] = score
+        return redirect('results', id = self.survey_id)
 
     def get(self, request, *args, **kwargs):
         return render(request, 'quiz/quiz.html', self.context)
 
     def post(self, request, *args, **kwargs):
-        if request.POST.get('ready'):
-            return self.get(request, *args, **kwargs)
+        answers: dict[int, int]  = request.session.pop('answers')
 
-        # answers = request.session.pop('answers')
-        # answers.append((
-        #     request.POST.get('question_id'),
-        #     request.POST.get('choice'),
-        #     request.POST.get('timerVal')
-        # ))
-        # request.session['answers'] = answers
-        return self.get(request)
+        question = self.context["question"]
+        score = question.score(
+            int(request.POST.get('choice') or 0),
+            int(request.POST.get('timerVal' or 0)))
 
-class EndView(RedirectView):
-    """ 
-    Validate the data in the session and stores it into database. Notice 
-    that if the user reach this page without complete the quiz, will be
-    redirected to startView.
-    """
-    pattern_name = 'results'
+        answers.update({question.id: score})
 
-    def validate_game_session(self) -> bool:
-        game_results = self.request.session.pop("answers")
-        if not game_results:
-            return False
-
-        game_session = deserialize('json',self.request.session.get("game_session"))
-        game_session = next(game_session).object
-        game_session.save()
-        
-        self.request.session["game_session"] = game_session.id
-
-        for question_id, choice_id, timer_val in game_results:
-            try:
-                choice = Choice.objects.get(pk=choice_id)
-            except ObjectDoesNotExist:
-                # When time runs out
-                choice = None
-            answer = Answer.new_answer(game_session,
-                    Question.objects.get(pk=question_id),
-                    choice,
-                    timer_val)
-            answer.save()
-
-        return True
-    
-    def get_redirect_url(self, *args, **kwargs):
-        if not self.validate_game_session():
-            return '/'
-
-        return super().get_redirect_url(*args, **kwargs)
+        request.session['answers'] = answers
 
 class ResultsView(TemplateView):
+        next_question = self.context['survey'].next_question(self.question_id)
+        if next_question is None:
+            return self.quiz_ended()
+
+        return redirect('question', s_id = self.survey_id, q_id = next_question.id)
+
     """ 
     Display the results of the quiz and a ranking of the top scores for 
     the given quiz.
